@@ -1,0 +1,105 @@
+<html>
+
+<head>
+    <title>Helloworld WebSocket Client</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <style>
+        .mytextarea {
+            height: 300px;
+            max-height: 300px;
+            overflow-y: scroll;
+            border: 0.062em solid #999;
+        }
+        .whiteboard {
+            border: 0.062em solid #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="row">
+                    <div class="col">
+                        <label>Location</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <input class="form-control" type="text" id="wsURI" value="ws://localhost:8029/chatjsonwebsocket/chat/java/mickaelbaron">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary" type="button" onclick="connect();">Connect</button>
+                        <button class="btn btn-secondary" type="button" onclick="disConnect();">Disconnect</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Message</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="wsMessage" value="My First Message">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary" type="button" onclick="send();">Send</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label>Image</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <div id=”gameArea”>
+                                <canvas class="whiteboard" id="whiteboardcanvas" width="200" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary" type="button" onclick="sendImage();">Send Image</button>
+                        <button class="btn btn-secondary" type="button" onclick="clearCanvas();">Clear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="row">
+                    <div class="col">
+                        <label>Messages</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <div id="wsMessages" class="mytextarea"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-danger" type="button" onclick="clearMessages();">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="websocket.js"></script>
+<script src="whiteboard.js"></script>
+
+</html>
