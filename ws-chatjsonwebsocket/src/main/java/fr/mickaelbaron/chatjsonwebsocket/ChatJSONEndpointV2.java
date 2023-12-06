@@ -28,6 +28,7 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint(value = "/chat/{role}/{chatroom}/{username}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
+
 public class ChatJSONEndpointV2 {
 
 	// Liste des sessions connectées
@@ -57,45 +58,59 @@ public class ChatJSONEndpointV2 {
     public void onOpen(Session session, @PathParam("chatroom") String chatRoom, @PathParam("username") String userName, @PathParam("role") String role)
             throws IOException {
         System.out.println("ChatEndpoint.onOpen()");
-        
-//        //Affichage des paramètres
-//        System.out.println("PathParameters:");
-//        session.getPathParameters().forEach((c, v) -> {
-//            System.out.println(c + " " + v);
-//        });
-//
-//        System.out.println("QueryParameters:");
-//        System.out.println(session.getQueryString());
-//
-//        System.out.println("Path and Query Parameters:");
-//        session.getRequestParameterMap().forEach((k, v) -> {
-//            System.out.println(k + " " + v);
-//        });
-        
-        
+
         //Numéro de la connection
         System.out.println("Connection number:" + session.getOpenSessions().size());
-        
+        allChatRooms.put(session.getId(), chatRoom);
+           
+        //Renvoie l'utilisateur s'il existe ou NULL sinon, grace au username
         ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
+        
+        //Les différents cas:
+        
         if (utilisateurExistant != null) {
-            // L'utilisateur existe déjà
+        // L'utilisateur existe déjà
+        	
             if ("admin".equals(utilisateurExistant.getRole())) {
-                // Si admin connxion possible a toute les conversations
+            // Si admin connexion possible a toutes les conversations
+            	
                 allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
                 this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 
             } else {
+            //Demandeur, mais verification de la chatroom
+            	
             	if (utilisateurExistant.getChatrooms().contains(chatRoom)) {
-                    // La chatroom est dans sa liste, connectez l'utilisateur à cette chatroom
+                // La chatroom est dans sa liste, connectez l'utilisateur à cette chatroom
+            		
+            		System.out.println("Chatroom dans la liste demandeur");
             		allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    
                 } else if (demandeursParChatRoom.containsKey(chatRoom)) {
-                    // La chatroom est utilisée par un autre utilisateur, refusez la connexion
-                    session.close();
-                } else {
-                    // La chatroom n'est pas dans sa liste, ajoutez-la et connectez l'utilisateur
+                 // La chatroom est utilisée par un autre utilisateur
+                	
+                    String existingUser = demandeursParChatRoom.get(chatRoom);
+                    
+                    if ("demandeur".equals(getUtilisateurParUserId(existingUser).getRole())) {
+                        // C'est un demandeur, refusez la connexion
+                    	System.out.println("Chatroom deja utilisée par autre demandeur");
+                        session.close();
+                        } 
+                    
+                    else {
+                    //C'est un admin alors connexion possible
+                    	
+                    	allUsers.put(session.getId(), userName);
+                        allSessions.put(userName, session);
+                        this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    	}
+                    
+                    }else {
+                    // La chatroom n'est pas dans sa liste, ajouter et connecter l'utilisateur
+                    	
                     utilisateurExistant.ajouterChatroom(chatRoom);
                     demandeursParChatRoom.put(chatRoom, userName);
                     allUsers.put(session.getId(), userName);
@@ -104,23 +119,34 @@ public class ChatJSONEndpointV2 {
                     this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 }
             }
+            
         } else {
-            // L'utilisateur n'existe pas, créer un nouvel utilisateur
+          // L'utilisateur n'existe pas, créer un nouvel utilisateur
+        	
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole(role);
-            if (nouvelUtilisateur.getRole().equals("admin")) {
-                // Si c'est un nouvel admin, connectez-le à n'importe quelle chatroom
+
+            if ("admin".equals(nouvelUtilisateur.getRole())) {
+            // Si c'est un nouvel admin, alors toutes les chatroom autorisées
+            	
             	allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
                 this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 existingUsers.add(nouvelUtilisateur);
+                
             } else {
+            //C'est un demandeur
+            	
             	if (chatroomExisteDeja(chatRoom)) {
-                    // La chatroom existe déjà, refusez la connexion
+                // La chatroom existe déjà, refusez la connexion
+            		
+            		System.out.println("Vous etes nouveau mais Chatroom deja prise");
                     session.close();
+                    
                 } else {
-                    // La chatroom n'existe pas, ajoutez-la et connectez le nouvel utilisateur
+                // La chatroom n'existe pas, ajoutez-la et connectez le nouvel utilisateur
+                	
                     nouvelUtilisateur.ajouterChatroom(chatRoom);
                     demandeursParChatRoom.put(chatRoom, userName);
                     allUsers.put(session.getId(), userName);
@@ -188,12 +214,14 @@ public class ChatJSONEndpointV2 {
         newChatMessage.setContent(currentUsername);
         this.broadcastStringMessage(currentUsername + " disconnected!", session, allChatRooms.get(session.getId()));
     }
-    
+
+    //Definition des Broadcast en fonction des types de messages à envoyer
     private void broadcastObjectMessage(ChatMessage message, String user, Session exclude, String currentChatRoom) {
         allSessions.forEach((username, session) -> {
+        	String chatRoom = allChatRooms.get(session.getId());
             try {
                 if (!(exclude != null && session.getId().equals(exclude.getId()))) {
-                    if (allChatRooms.get(session.getId()).equals(currentChatRoom)) {
+                    if (chatRoom != null && chatRoom.equals(currentChatRoom)) {
                         session.getBasicRemote().sendObject(message);
                     }
                 }
@@ -235,17 +263,15 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-//    private boolean utilisateurExisteDeja(ChatUtilisateur utilisateur) {
-//        // Vérifier si un utilisateur avec le même userId existe déjà
-//        return existingUsers.stream().anyMatch(u -> u.getUserId().equals(utilisateur.getUserId()));
-//    }
-    
+
     private boolean chatroomExisteDeja(String chatroom) {
-        //return utilisateur.getChatrooms().contains(chatroom);
     	return existingChatroom.contains(chatroom);
     }
     
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
+    //Verifier si l'userId fait parti des userId deja existant
+    //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
+    	
         return existingUsers.stream()
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
