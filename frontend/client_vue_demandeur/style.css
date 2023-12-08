@@ -1,0 +1,82 @@
+/* === TEXT AREA === */
+
+.mytextarea {
+    height: 300px;
+    max-height: 300px;
+    overflow-y: scroll;
+    border: 0.062em solid #999;
+    padding: 10px;
+}
+.message-bubble {
+    position: relative;
+    padding: 5px;
+    /*padding-right: 15px;*/ /* Increased padding for better visibility */
+    margin: 5px;
+    border-radius: 10px;
+    background-color: #007bff; /* Set your desired background color */
+    color: #fff; /* Set your desired text color */
+    display: block; /* Allow the bubble to shrink to fit content */
+    width: fit-content;
+    max-width: 70%; /* Set your desired maximum width */
+    clear: both; /* Stop the float */
+    margin-right: 20px; /* Auto right margin to align nicely */
+    animation-name: fade-in;
+    animation-duration: 1s;
+}
+
+@keyframes fade-in {
+    from {opacity: 0; position: relative; top: 20px;}
+    to {opacity: 1; position: relative; top: 0px;}
+}
+
+.message-bubble::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 5;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-right: 15px solid #007bff; /* Match the background color of the bubble */
+    border-bottom: 10px solid transparent;
+    margin-top: -10px;
+}
+
+.info-text {
+    position: relative;
+    padding: 15px;  /* Increased padding for better visibility */
+    margin: 10px auto;   /* Center the bubble horizontally */
+    border-radius: 15px;
+    background-color: #f0f0f0; /* Light gray background color */
+    color: #333; /* Dark text color */
+    width: fit-content;            
+    max-width: 70%; /* Set your desired maximum width */
+    font-style: italic; /* Italic font style */
+}
+
+/* === TEXT AREA (END) === */
+
+/* === CONNECTION INTERFACE === */
+
+.connection-state-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%; /* Make it a circle */
+    display: inline-block;
+    /* position: absolute;
+    top: 50%;
+    transform: translateY(-50%); */
+    margin-left: 30px;
+  }
+  
+/* Red dot for disconnected state */
+.connection-state-dot.disconnected {
+    background-color: red;
+}
+
+/* Green dot for connected state */
+.connection-state-dot.connected {
+    background-color: green;
+}
+
+/* === CONNECTION INTERFACE === */
