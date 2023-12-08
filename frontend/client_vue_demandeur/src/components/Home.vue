@@ -1,10 +1,9 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
-import { discussions, setChatroom, current_chatroom } from '../components/websocket.js'
+import { discussions, setChatroom } from '../components/websocket.js'
 
 const router = useRouter()
-let chatroom = discussions[0]
 
 const store = inject('STORE')
 

@@ -1,11 +1,23 @@
 var ws;
 
-export const discussions = ['Discussion1','Discussion2']
+export let discussions = ['Discussion1','Discussion2']
 export let current_chatroom = 'Discussion1'
 
 export function setChatroom(value) {
     current_chatroom = value;
   }
+
+export let DescriptionNewAlerte = ''
+
+export function setDescriptionNewAlerte(value) {
+    DescriptionNewAlerte = value;
+}
+
+export function NewAlerte() {
+    var message = {content : DescriptionNewAlerte, created : new Date(), browser : navigator.product}
+    ws.send(JSON.stringify(message));
+    setDescriptionNewAlerte('')
+}
 
 export function connect(user) {
     var host = document.location.host;
@@ -16,6 +28,9 @@ export function connect(user) {
     ws.onopen = function (evt) {
         console.log(evt);
         writeMessage("Connect from WSEndpoint.");
+        if (DescriptionNewAlerte != '') {
+            NewAlerte()
+        }
     };
     ws.onmessage = function (evt) {
         console.log(evt);
