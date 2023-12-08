@@ -1,6 +1,8 @@
 package fr.mickaelbaron.chatjsonwebsocket;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class ChatUtilisateur {
 	
@@ -11,6 +13,7 @@ public class ChatUtilisateur {
 	
 	//Constructeur
 	public ChatUtilisateur() {
+		chatrooms = new ArrayList<>();
 	}
 	
 	//Getters et Setters
@@ -27,7 +30,7 @@ public class ChatUtilisateur {
 	}
 	
 	public void setRole(String role) {
-		this.userId = role;
+		this.role = role;
 	}
 	
 	public List<String> getChatrooms() {

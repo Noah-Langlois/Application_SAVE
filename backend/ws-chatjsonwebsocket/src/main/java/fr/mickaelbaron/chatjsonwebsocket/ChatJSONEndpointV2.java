@@ -76,7 +76,7 @@ public class ChatJSONEndpointV2 {
             	
                 allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 
             } else {
             //Demandeur, mais verification de la chatroom
@@ -87,7 +87,7 @@ public class ChatJSONEndpointV2 {
             		System.out.println("Chatroom dans la liste demandeur");
             		allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
-                    this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                     
                 } else if (demandeursParChatRoom.containsKey(chatRoom)) {
                  // La chatroom est utilisée par un autre utilisateur
@@ -105,7 +105,7 @@ public class ChatJSONEndpointV2 {
                     	
                     	allUsers.put(session.getId(), userName);
                         allSessions.put(userName, session);
-                        this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                        //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                     	}
                     
                     }else {
@@ -116,7 +116,7 @@ public class ChatJSONEndpointV2 {
                     allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     existingChatroom.add(chatRoom);
-                    this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 }
             }
             
@@ -132,13 +132,13 @@ public class ChatJSONEndpointV2 {
             	
             	allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 existingUsers.add(nouvelUtilisateur);
                 
             } else {
             //C'est un demandeur
             	
-            	if (chatroomExisteDeja(chatRoom)) {
+            	if (existingChatroom.contains(chatRoom)) {
                 // La chatroom existe déjà, refusez la connexion
             		
             		System.out.println("Vous etes nouveau mais Chatroom deja prise");
@@ -171,7 +171,7 @@ public class ChatJSONEndpointV2 {
         chatIds.put(session.getId(), chatRoom);
         
         // Utiliser cet objet pour diffuser un message
-        this.broadcastObjectMessage(newChatMessage, userName, null, allChatRooms.get(session.getId()));
+        //this.broadcastObjectMessage(newChatMessage, userName, null, allChatRooms.get(session.getId()));
     }
     
     @OnMessage
@@ -218,10 +218,18 @@ public class ChatJSONEndpointV2 {
     //Definition des Broadcast en fonction des types de messages à envoyer
     private void broadcastObjectMessage(ChatMessage message, String user, Session exclude, String currentChatRoom) {
         allSessions.forEach((username, session) -> {
+        //Parcourir toute les sessions de allsessions
+        	
         	String chatRoom = allChatRooms.get(session.getId());
+        	//Recupère la chatroom associée
+        	
             try {
                 if (!(exclude != null && session.getId().equals(exclude.getId()))) {
+                //exclude null ou session differente de exclude
+                	
                     if (chatRoom != null && chatRoom.equals(currentChatRoom)) {
+                    //Chatroom non nul et chatroom correspond a la chatroom utilisée
+                    	
                         session.getBasicRemote().sendObject(message);
                     }
                 }
@@ -263,11 +271,7 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-
-    private boolean chatroomExisteDeja(String chatroom) {
-    	return existingChatroom.contains(chatroom);
-    }
-    
+   
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
