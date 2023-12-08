@@ -53,6 +53,8 @@ public class ChatJSONEndpointV2 {
 	private static Map<String, String> userRoles = new ConcurrentHashMap<>();
 	private static Map<String, String> userNames = new ConcurrentHashMap<>();
 	private static Map<String, String> chatIds = new ConcurrentHashMap<>();
+	
+	private static ChatDAO chatDAO = new ChatDAO();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("chatroom") String chatRoom, @PathParam("username") String userName, @PathParam("role") String role)
@@ -76,10 +78,17 @@ public class ChatJSONEndpointV2 {
             	
                 allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
                 
-            } else {
-            //Demandeur, mais verification de la chatroom
+                //Recupération des messsages:
+                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                
+                broadcastHistory(chatMessages, session);
+                
+                
+                } else {
+                //Demandeur, mais verification de la chatroom
             	
             	if (utilisateurExistant.getChatrooms().contains(chatRoom)) {
                 // La chatroom est dans sa liste, connectez l'utilisateur à cette chatroom
@@ -87,7 +96,15 @@ public class ChatJSONEndpointV2 {
             		System.out.println("Chatroom dans la liste demandeur");
             		allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
-                    //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                    this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
+                    
+                    //Recupération des messsages:
+                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                    broadcastHistory(chatMessages, session);
+                    
+                    broadcastListMessage(utilisateurExistant.getChatrooms(), session);
+                    
                     
                 } else if (demandeursParChatRoom.containsKey(chatRoom)) {
                  // La chatroom est utilisée par un autre utilisateur
@@ -105,7 +122,12 @@ public class ChatJSONEndpointV2 {
                     	
                     	allUsers.put(session.getId(), userName);
                         allSessions.put(userName, session);
-                        //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                        System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                        this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                        //Recupération des messsages:
+                        List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                        broadcastHistory(chatMessages, session);
+                        
                     	}
                     
                     }else {
@@ -116,7 +138,14 @@ public class ChatJSONEndpointV2 {
                     allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     existingChatroom.add(chatRoom);
-                    //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                    System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                    this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
+                    broadcastListMessage(utilisateurExistant.getChatrooms(),  session);
+                    
+                    //Recupération des messsages:
+                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                    broadcastHistory(chatMessages, session);
+                    
                 }
             }
             
@@ -132,8 +161,13 @@ public class ChatJSONEndpointV2 {
             	
             	allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                //this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+                System.out.println("Utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
+                this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 existingUsers.add(nouvelUtilisateur);
+                //Recupération des messsages:
+                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                broadcastHistory(chatMessages, session);
+                
                 
             } else {
             //C'est un demandeur
@@ -152,8 +186,11 @@ public class ChatJSONEndpointV2 {
                     allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     existingChatroom.add(chatRoom);
+                    System.out.println("Utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
                     this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                     existingUsers.add(nouvelUtilisateur);
+                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                    broadcastHistory(chatMessages, session);
                 }
             }
         }
@@ -197,6 +234,9 @@ public class ChatJSONEndpointV2 {
         
         this.broadcastObjectMessage(message, allUsers.get(session.getId()), null,
                 allChatRooms.get(session.getId()));
+        
+        chatDAO.saveChatMessage(message.getChatroomId(), message);
+
     }
 
     @OnClose
@@ -271,6 +311,25 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
+    private void broadcastHistory(List<ChatMessage> messages, Session session) {
+        messages.forEach(message -> {
+            try {
+                session.getBasicRemote().sendObject(message);
+            } catch (IOException | EncodeException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    private void broadcastListMessage(List<String> chatrooms, Session session) {
+        chatrooms.forEach(message -> {
+            try {
+                session.getBasicRemote().sendObject(message);
+            } catch (IOException | EncodeException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
    
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
     //Verifier si l'userId fait parti des userId deja existant
