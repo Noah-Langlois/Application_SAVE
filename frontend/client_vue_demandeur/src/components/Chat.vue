@@ -1,15 +1,13 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
-import { disConnect, connect, clearMessages, send } from '../components/websocket.js'
-import { current_chatroom } from '../components/websocket.js'
 
 const router = useRouter()
 
 const store = inject('STORE')
 
 function changeRoute(value) {
-    clearMessages()
+    store.methods.clearMessages()
     console.log(store.system.debug)
     router.push({
         name: value
@@ -21,7 +19,7 @@ function changeRoute(value) {
     <main
     class='flex min-h-screen flex-col items-center justify-between p-24'
     >
-        <h1 class="m-4">{{ current_chatroom }}</h1>
+        <h1 class="m-4">{{ store.state.current_chatroom }}</h1>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-5">
@@ -39,13 +37,13 @@ function changeRoute(value) {
                     </div>
                     <div class="row">
                         <div class="col">
-                            <button class="btn btn-primary" type="button" @click="send">Send</button>
+                            <button class="btn btn-primary" type="button" @click="store.methods.send()">Send</button>
                         </div>
                     </div>
                     <div class="row pt-5">
                         <div class="col">
-                            <button class="btn btn-primary" type="button" @click="connect($route.params.id)">Connect</button>
-                            <button class="btn btn-secondary" type="button" @click="disConnect">Disconnect</button>
+                            <button class="btn btn-primary" type="button" @click="store.methods.connect($route.params.id)">Connect</button>
+                            <button class="btn btn-secondary" type="button" @click="store.methods.disConnect()">Disconnect</button>
                         </div>
                     </div>
                     <div class="row pt-5">
@@ -75,7 +73,7 @@ function changeRoute(value) {
                     </div>
                     <div class="row">
                         <div class="col">
-                            <button class="btn btn-danger" type="button" @click="clearMessages">Clear</button>
+                            <button class="btn btn-danger" type="button" @click="store.methods.clearMessages()">Clear</button>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
-import { setChatroom, setDescriptionNewAlerte, discussions, current_chatroom } from '../components/websocket.js'
 
 const router = useRouter()
 
@@ -15,9 +14,9 @@ function changeRoute(value) {
 }
 
 function createAlerte(value) {
-    setChatroom(document.getElementById("discussion_title").value)
-    setDescriptionNewAlerte(document.getElementById("description").value)
-    discussions.push(current_chatroom)
+    store.methods.setChatroom(document.getElementById("discussion_title").value)
+    store.methods.setDescriptionNewAlerte(document.getElementById("description").value)
+    store.methods.addDiscussion(store.state.current_chatroom)
     console.log(store.system.debug)
     router.push({
         name: value

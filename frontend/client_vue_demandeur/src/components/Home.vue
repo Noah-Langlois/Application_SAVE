@@ -1,14 +1,13 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
-import { discussions, setChatroom } from '../components/websocket.js'
 
 const router = useRouter()
 
 const store = inject('STORE')
 
 function changeRoute(value) {
-  setChatroom(document.getElementById("select_chatroom").value)
+  store.methods.setChatroom(document.getElementById("select_chatroom").value)
   console.log(store.system.debug)
   router.push({
     name: value
@@ -28,7 +27,7 @@ function changeRoute(value) {
                 <div class="col-2 ms-5 ">
                     <label>Discussions</label>
                     <select id="select_chatroom" class="form-select">
-                      <option v-for="item in discussions">{{item}}</option>
+                      <option v-for="item in store.state.discussions">{{item}}</option>
                     </select>
                     <button class="btn btn-primary mt-2" @click="changeRoute('Chat')">Connexion</button>
                 </div>
