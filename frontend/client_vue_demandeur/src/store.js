@@ -8,8 +8,13 @@ const system = reactive({
 const state = reactive({
   discussions: ['Discussion1','Discussion2'],
   current_chatroom: 'Discussion1',
-  DescriptionNewAlerte: ''
+  DescriptionNewAlerte: '',
+  isWSConnected: false
 })
+
+function setWSConnected(pValue) {
+  state.isWSConnected = pValue
+}
 
 const methods = {
   NewAlerte() {
@@ -18,9 +23,10 @@ const methods = {
     methods.setDescriptionNewAlerte('')
   },
 
-  writeMessage(pValue) {
+  writeMessage(pValue, pType) {
     var newElement = document.createElement("div");
     newElement.textContent = pValue;
+    newElement.className = pType || "message-bubble"; // by default, a message is displayed as a bubble message
     var wsMessages = document.getElementById("wsMessages");
     wsMessages.appendChild(newElement);
     wsMessages.scrollTop = wsMessages.scrollHeight;
@@ -41,7 +47,8 @@ const methods = {
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
         console.log(evt);
-        methods.writeMessage("Connect from WSEndpoint.");
+        setWSConnected(true);
+        methods.writeMessage("Connect from WSEndpoint.", "info-text");
         if (state.DescriptionNewAlerte != '') {
             methods.NewAlerte()
         }
@@ -55,7 +62,8 @@ const methods = {
         console.log(evt);
     };
     ws.onclose = function (evt) {
-        methods.writeMessage("Disconnect from WSEndpoint.");
+      setWSConnected(false);
+        methods.writeMessage("Disconnect from WSEndpoint.", "info-text");
     }
   },
 
@@ -78,6 +86,11 @@ const methods = {
 
   addDiscussion(pValue) {
     state.discussions.push(pValue)
+  },
+
+  clearMessageEntry() {
+    var wsMessage = document.getElementById("wsMessage");
+    wsMessage.value = "";
   }
 }
 

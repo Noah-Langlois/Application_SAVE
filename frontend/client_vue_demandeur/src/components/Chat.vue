@@ -13,6 +13,11 @@ function changeRoute(value) {
         name: value
     })
 }
+
+function sendAndClear() {
+    store.methods.send()
+    store.methods.clearMessageEntry()
+}
 </script>
 
 <template>
@@ -31,7 +36,7 @@ function changeRoute(value) {
                     <div class="row">
                         <div class="col">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="wsMessage">
+                                <input type="text" v-on:keyup.enter="sendAndClear()" class="form-control" id="wsMessage">
                             </div>
                         </div>
                     </div>
@@ -56,6 +61,8 @@ function changeRoute(value) {
                     <div class="row">
                         <div class="col">
                             <label>Messages</label>
+                            <div v-if="store.state.isWSConnected" class="connection-state-dot connected">a</div>
+                            <div v-else class="connection-state-dot disconnected">b</div>
                         </div>
                     </div>
                     <div class="row">
