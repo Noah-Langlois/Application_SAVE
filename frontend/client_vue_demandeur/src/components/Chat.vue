@@ -7,6 +7,7 @@ const router = useRouter()
 const store = inject('STORE')
 
 function changeRoute(value) {
+    store.methods.disConnect()
     store.methods.clearMessages()
     console.log(store.system.debug)
     router.push({
@@ -61,8 +62,8 @@ function sendAndClear() {
                     <div class="row">
                         <div class="col">
                             <label>Messages</label>
-                            <div v-if="store.state.isWSConnected" class="connection-state-dot connected">a</div>
-                            <div v-else class="connection-state-dot disconnected">b</div>
+                            <div v-if="store.state.isWSConnected" class="connection-state-dot connected"></div>
+                            <div v-else class="connection-state-dot disconnected"></div>
                         </div>
                     </div>
                     <div class="row">
