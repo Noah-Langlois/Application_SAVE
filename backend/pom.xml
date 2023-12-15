@@ -7,14 +7,15 @@
 	<version>1.0.0-SNAPSHOT</version>
 
 	<modules>
-		<module>ws-helloworldwebsocket</module>
+		<!-- <module>ws-helloworldwebsocket</module>
 		<module>ws-helloworldpartialwebsocket</module>
 		<module>ws-chatwebsocket</module>
-		<module>ws-chatbinarywebsocket</module>
+		<module>ws-chatbinarywebsocket</module> -->
 		<module>ws-chatjsonwebsocket</module>
-		<module>ws-chatclientwebsocket</module>
+		<!-- <module>ws-chatclientwebsocket</module>
 		<module>ws-chatjavafxclientwebsocket</module>
-		<module>ws-chatwarwebsocket</module>
+		<module>ws-chatwarwebsocket</module> -->
+		<module>blockchainDataBase-api</module>
 	</modules>
 
 	<properties>
