@@ -7,12 +7,21 @@ const router = useRouter()
 const store = inject('STORE')
 
 function changeRoute(value) {
-    store.methods.disConnect()
-    store.methods.clearMessages()
-    console.log(store.system.debug)
-    router.push({
-        name: value
+    if (store.state.isWSConnected) {
+        store.methods.disConnect()
+        store.methods.clearMessages()
+        console.log(store.system.debug)
+        router.push({
+            name: value
+        })
+    }
+    else {
+        store.methods.clearMessages()
+        console.log(store.system.debug)
+        router.push({
+            name: value
     })
+    }
 }
 
 function sendAndClear() {
