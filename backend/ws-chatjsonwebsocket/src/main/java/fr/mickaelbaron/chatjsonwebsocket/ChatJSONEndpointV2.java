@@ -78,7 +78,7 @@ public class ChatJSONEndpointV2 {
             	
                 allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
                 this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
                 
                 //Recupération des messsages:
@@ -96,14 +96,18 @@ public class ChatJSONEndpointV2 {
             		System.out.println("Chatroom dans la liste demandeur");
             		allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
-                    System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                    System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
                     this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
                     
                     //Recupération des messsages:
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
                     broadcastHistory(chatMessages, session);
                     
-                    broadcastListMessage(utilisateurExistant.getChatrooms(), session);
+                    //Envoie de la liste des chatrooms à la vue
+                    ChatMessage infoMessage = new ChatMessage();
+                    infoMessage.setType("Liste chatrooms");
+                    infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
+                    broadcastListChatroom(infoMessage, session);
                     
                     
                 } else if (demandeursParChatRoom.containsKey(chatRoom)) {
@@ -122,7 +126,7 @@ public class ChatJSONEndpointV2 {
                     	
                     	allUsers.put(session.getId(), userName);
                         allSessions.put(userName, session);
-                        System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                        System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
                         this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                         //Recupération des messsages:
                         List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
@@ -138,9 +142,14 @@ public class ChatJSONEndpointV2 {
                     allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     existingChatroom.add(chatRoom);
-                    System.out.println("Utilisateur :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                    System.out.println("Utilisateur existant :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
                     this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
-                    broadcastListMessage(utilisateurExistant.getChatrooms(),  session);
+                    
+                    //Envoie de la liste des chatrooms à la vue
+                    ChatMessage infoMessage = new ChatMessage();
+                    infoMessage.setType("Liste chatrooms");
+                    infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
+                    broadcastListChatroom(infoMessage, session);
                     
                     //Recupération des messsages:
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
@@ -161,7 +170,7 @@ public class ChatJSONEndpointV2 {
             	
             	allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
-                System.out.println("Utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
+                System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
                 this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                 existingUsers.add(nouvelUtilisateur);
                 //Recupération des messsages:
@@ -186,21 +195,27 @@ public class ChatJSONEndpointV2 {
                     allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     existingChatroom.add(chatRoom);
-                    System.out.println("Utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
+                    System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
                     this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                     existingUsers.add(nouvelUtilisateur);
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
                     broadcastHistory(chatMessages, session);
+                    
+                    //Envoie de la liste des chatrooms à la vue
+                    ChatMessage infoMessage = new ChatMessage();
+                    infoMessage.setType("Liste chatrooms");
+                    infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());
+                    broadcastListChatroom(infoMessage, session);
                 }
             }
         }
 
         // Créer un nouvel objet ChatMessage et définir les propriétés
-        ChatMessage newChatMessage = new ChatMessage();
-        newChatMessage.setRole(role);
-        newChatMessage.setUserId(userName);
-        newChatMessage.setSessionId(session.getId());
-        newChatMessage.setChatroomId(chatRoom);
+//        ChatMessage newChatMessage = new ChatMessage();
+//        newChatMessage.setRole(role);
+//        newChatMessage.setUserId(userName);
+//        newChatMessage.setSessionId(session.getId());
+//        newChatMessage.setChatroomId(chatRoom);
         
         //Remplissage des listes info utilisateur pour l'afficher lors de l'envoie du Chatmessage
         userRoles.put(session.getId(), role);
@@ -231,6 +246,7 @@ public class ChatJSONEndpointV2 {
         message.setUserId(username);
         message.setChatroomId(chat);
         message.setSessionId(session.getId());
+        message.setType("message chat");
         
         this.broadcastObjectMessage(message, allUsers.get(session.getId()), null,
                 allChatRooms.get(session.getId()));
@@ -311,6 +327,8 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
+    
+    //Afficher l'historique des messages
     private void broadcastHistory(List<ChatMessage> messages, Session session) {
         messages.forEach(message -> {
             try {
@@ -320,17 +338,26 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-    private void broadcastListMessage(List<String> chatrooms, Session session) {
-        chatrooms.forEach(message -> {
-            try {
-                session.getBasicRemote().sendObject(message);
-            } catch (IOException | EncodeException e) {
-                e.printStackTrace();
-            }
-        });
+    
+    //Afficher la liste des chatroom
+    private void broadcastListChatroom(ChatMessage message, Session session) {
+        try {
+            session.getBasicRemote().sendObject(message);
+        } catch (IOException | EncodeException e) {
+            e.printStackTrace();
+        }
     }
 
-   
+//    private void broadcastListChatroom(List<String> chatrooms, Session session) {
+//        chatrooms.forEach(message -> {
+//            try {
+//                session.getBasicRemote().sendObject(message);
+//            } catch (IOException | EncodeException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+       
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant

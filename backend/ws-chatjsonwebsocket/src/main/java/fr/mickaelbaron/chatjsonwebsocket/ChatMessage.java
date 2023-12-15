@@ -1,6 +1,7 @@
 package fr.mickaelbaron.chatjsonwebsocket;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Florine
@@ -24,6 +25,10 @@ public class ChatMessage {
 	private String sessionId;
 	
 	private String chatroomId;
+	
+	private String type;
+	
+	private List<String> chatrooms;
 	
 	//Constructeur
 	public ChatMessage() {
@@ -85,6 +90,22 @@ public class ChatMessage {
 	public void setChatroomId(String chatroomId) {
 		this.chatroomId = chatroomId;
 	}
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType (String type) {
+		this.type=type;
+	}
+	
+    public List<String> getChatrooms() {
+        return chatrooms;
+    }
+
+    public void setChatrooms(List<String> chatrooms) {
+        this.chatrooms = chatrooms;
+    }
 
 	//Redefinition de la methode toString
 	@Override
