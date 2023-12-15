@@ -6,7 +6,7 @@ const system = reactive({
 })
 
 const state = reactive({
-  discussions: ['Discussion1','Discussion2'],
+  discussions: [],
   current_chatroom: 'Discussion1',
   DescriptionNewAlerte: '',
   isWSConnected: false
@@ -48,7 +48,6 @@ const methods = {
     ws.onopen = function (evt) {
         console.log(evt);
         setWSConnected(true);
-        methods.writeMessage("Connect from WSEndpoint.", "info-text");
         if (state.DescriptionNewAlerte != '') {
             methods.NewAlerte()
         }
@@ -56,14 +55,20 @@ const methods = {
     ws.onmessage = function (evt) {
         console.log(evt);
         const obj = JSON.parse(evt.data)
-        methods.writeMessage(obj.role + " : " + obj.content);
+        if (obj.type=='message chat') {
+          methods.writeMessage(obj.role + " : " + obj.content);
+        }
+        if (obj.type=='Liste chatrooms') {
+          for (let i = 1 ; i < obj.chatrooms.length ; i++) {
+            state.discussions[i-1]=(obj.chatrooms[i])
+          }
+        }
     };
     ws.onerror = function (evt) {
         console.log(evt);
     };
     ws.onclose = function (evt) {
       setWSConnected(false);
-        methods.writeMessage("Disconnect from WSEndpoint.", "info-text");
     }
   },
 
