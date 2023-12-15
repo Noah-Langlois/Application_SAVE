@@ -7,7 +7,9 @@ const router = useRouter()
 const store = inject('STORE')
 
 function changeRoute(value) {
-  store.methods.setChatroom(document.getElementById("select_chatroom").value)
+  if (value=='Chat') {
+    store.methods.setChatroom(document.getElementById("select_chatroom").value)
+  }
   console.log(store.system.debug)
   router.push({
     name: value
@@ -24,7 +26,7 @@ function changeRoute(value) {
               <h1 class="ms-4 mt-4 col-9">Bienvenue sur SAVE</h1>
             </div>
             <div class="row mt-5">
-                <div class="col-2 ms-5 ">
+                <div class="col-2 ms-5 " v-if="store.state.isDiscussionEmpty">
                     <label>Discussions</label>
                     <select id="select_chatroom" class="form-select">
                       <option v-for="item in store.state.discussions">{{item}}</option>

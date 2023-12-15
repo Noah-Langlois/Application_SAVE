@@ -9,11 +9,16 @@ const state = reactive({
   discussions: [],
   current_chatroom: 'Discussion1',
   DescriptionNewAlerte: '',
-  isWSConnected: false
+  isWSConnected: false,
+  isDiscussionNotEmpty: false
 })
 
 function setWSConnected(pValue) {
   state.isWSConnected = pValue
+}
+
+function setDiscussionEmpty(pValue) {
+  state.isDiscussionEmpty = pValue
 }
 
 const methods = {
@@ -61,6 +66,7 @@ const methods = {
         if (obj.type=='Liste chatrooms') {
           for (let i = 1 ; i < obj.chatrooms.length ; i++) {
             state.discussions[i-1]=(obj.chatrooms[i])
+            setDiscussionEmpty(true)
           }
         }
     };
