@@ -1,5 +1,6 @@
 import { reactive, readonly } from 'vue'
 var ws;
+
 const system = reactive({
   debug: false
 })
@@ -46,7 +47,7 @@ const methods = {
   getChatrooms(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURIChatrooms = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/demandeur/" + user
+    const wsURIChatrooms = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + user
 
     ws = new WebSocket(wsURIChatrooms);
     ws.onopen = function (evt) {
@@ -56,9 +57,11 @@ const methods = {
     ws.onmessage = function (evt) {
         console.log(evt);
         const obj = JSON.parse(evt.data)
-        for (let i = 0 ; i < obj.chatrooms.length ; i++) {
-          state.discussions[i]=(obj.chatrooms[i])
-          setDiscussionEmpty(true)
+        if (obj.type=='Liste chatrooms') {
+          for (let i = 0 ; i < obj.chatrooms.length ; i++) {
+            state.discussions[i]=(obj.chatrooms[i])
+            setDiscussionEmpty(true)
+          }
         }
     };
     ws.onerror = function (evt) {
@@ -69,11 +72,10 @@ const methods = {
     }
   },
 
-
   connect(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/demandeur/" + user + "/" + state.current_chatroom
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + state.current_chatroom + "/" + user
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {

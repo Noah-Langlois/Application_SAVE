@@ -26,15 +26,12 @@ function changeRoute(value) {
               <h1 class="ms-4 mt-4 col-9">Bienvenue sur SAVE</h1>
             </div>
             <div class="row mt-5">
-                <div class="col-2 ms-5 ">
+                <div class="col-2 ms-5 " v-if="store.state.isDiscussionEmpty">
                     <label>Discussions</label>
                     <select id="select_chatroom" class="form-select">
                       <option v-for="item in store.state.discussions">{{item}}</option>
                     </select>
                     <button class="btn btn-primary mt-2" @click="changeRoute('Chat')">Connexion</button>
-                </div>
-                <div class="col mt-4">
-                  <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
                 </div>
             </div>
         </div>

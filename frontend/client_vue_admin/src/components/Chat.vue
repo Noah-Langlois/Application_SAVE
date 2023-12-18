@@ -6,7 +6,7 @@ const router = useRouter()
 
 const store = inject('STORE')
 
-function changeRoute(value, user) {
+function changeRoute(value) {
     if (store.state.isWSConnected) {
         store.methods.disConnect()
         store.methods.clearMessages()
@@ -21,9 +21,6 @@ function changeRoute(value, user) {
         router.push({
             name: value
     })
-    }
-    if (value=='Home') {
-        store.methods.getChatrooms(user)
     }
 }
 
@@ -66,7 +63,7 @@ function sendAndClear() {
                     </div>
                     <div class="row pt-5">
                         <div class="col">
-                                <button class="btn btn-primary" @click="changeRoute('Home',$route.params.id)">Menu</button>
+                                <button class="btn btn-primary" @click="changeRoute('Home')">Menu</button>
                         </div>
                     </div>
                 </div>

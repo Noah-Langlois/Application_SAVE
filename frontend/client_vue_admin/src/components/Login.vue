@@ -6,7 +6,8 @@ const router = useRouter()
 
 const store = inject('STORE')
 
-function changeRoute(value,user) {
+function changeRoute(value) {
+    let user = document.getElementById("login_pseudo").value
     store.methods.setChatroom(user)
     store.methods.getChatrooms(user)
     if (store.state.isWSConnected) {
@@ -27,10 +28,15 @@ function changeRoute(value,user) {
             </div>
         </div>
         <div class="col-2 m-4">
+            <label>Pseudo</label>
+            <input type="text" class="form-control" id="login_pseudo"/>
+        </div>
+        <div class="col-2 m-4">
+            <label>Mot de passe</label>
             <input type="text" class="form-control" id="login_password"/>
         </div>
         <div class="m-4">
-            <button class="btn btn-primary" @click="changeRoute('Home',$route.params.id)">Confirmer</button>
+            <button class="btn btn-primary" @click="changeRoute('Home')">Confirmer</button>
         </div>
     </main>
 </template>
