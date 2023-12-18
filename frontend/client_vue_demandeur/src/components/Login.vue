@@ -7,7 +7,6 @@ const router = useRouter()
 const store = inject('STORE')
 
 function changeRoute(value,user) {
-    store.methods.setChatroom(user)
     store.methods.getChatrooms(user)
     if (store.state.isWSConnected) {
         store.methods.disConnect()

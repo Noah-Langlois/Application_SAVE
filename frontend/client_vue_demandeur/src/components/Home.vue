@@ -1,17 +1,26 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
+import Chat from "./Chat.vue"
 
 const router = useRouter()
 
 const store = inject('STORE')
 
-function setChatroomList(pvalue) {
+function setChatroomList(pvalue, user) {
   store.methods.setChatroom(pvalue)
-
+  if (store.state.isWSConnected) {
+    store.methods.disConnect()
+    store.methods.clearMessages()
+  }
+  store.methods.connect(user)
 }
 
 function changeRoute(value) {
+  if (store.state.isWSConnected) {
+    store.methods.disConnect()
+    store.methods.clearMessages()
+  }
   console.log(store.system.debug)
   router.push({
     name: value
@@ -27,17 +36,21 @@ function changeRoute(value) {
             <div class="row">
               <h1 class="ms-4 mt-4 col-9">Bienvenue sur SAVE</h1>
             </div>
-            <div class="row mt-5">
-                <div class="col-2 ms-5 ">
-                    <label>Discussions</label>
+            <div class="row">
+                <div class="col-2 ms-5 mt-5">
+                  <div class="mt-5">
+                  </div>
+                    <label v-if="store.state.isDiscussionEmpty">Discussions</label>
                     <div id="select_chatroom" class="list-group" role="tablist">
                       <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action"
-                      data-bs-toggle="list" role="tab" @click="setChatroomList({item}.item)">{{item}}</a>
+                      data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
                     </div>
-                    <button class="btn btn-primary mt-2" @click="changeRoute('Chat')">Connexion</button>
+                    <div class="mt-4 ms-4">
+                      <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+                    </div>
                 </div>
-                <div class="col mt-4">
-                  <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+                <div class="col ms-5">
+                  <Chat/>
                 </div>
             </div>
         </div>

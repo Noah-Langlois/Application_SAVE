@@ -13,10 +13,11 @@ function changeRoute(value) {
   })
 }
 
-function createAlerte(value) {
+function createAlerte(value,user) {
     store.methods.setChatroom(document.getElementById("discussion_title").value)
     store.methods.setDescriptionNewAlerte(document.getElementById("description").value)
     store.methods.addDiscussion(store.state.current_chatroom)
+    store.methods.connect(user)
     console.log(store.system.debug)
     router.push({
         name: value
@@ -47,7 +48,7 @@ function createAlerte(value) {
                     </div>
             </div>
             <div id="Buttons" class="m-4">
-                <button class="btn btn-primary me-5" @click="createAlerte('Chat')">Envoyer</button>
+                <button class="btn btn-primary me-5" @click="createAlerte('Home',$route.params.id)">Envoyer</button>
                     <button class="btn btn-primary" @click="changeRoute('Home')">Menu</button>
             </div> 
 

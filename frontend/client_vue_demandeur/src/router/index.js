@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '../components/Home.vue'
-import Chat from '../components/Chat.vue'
 import Form from '../components/Form.vue'
 import Login from '../components/Login.vue'
 
@@ -18,12 +17,6 @@ const router = createRouter({
       path: '/:id/home',
       name: 'Home',
       component: Home,
-      props: true
-    },
-    {
-      path: '/:id/chat',
-      name: 'Chat',
-      component: Chat,
       props: true
     },
     {
