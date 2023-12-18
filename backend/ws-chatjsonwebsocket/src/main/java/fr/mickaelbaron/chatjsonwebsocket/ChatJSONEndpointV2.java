@@ -25,7 +25,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * @author Florine
  * Serveur pour l'application BE-SAVE
  */
-@ServerEndpoint(value = "/chat/{role}/{chatroom}/{username}",
+@ServerEndpoint(value = "/chat/{role}/{username}/{chatroom}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
@@ -59,7 +59,8 @@ public class ChatJSONEndpointV2 {
     @OnOpen
     public void onOpen(Session session, @PathParam("chatroom") String chatRoom, @PathParam("username") String userName, @PathParam("role") String role)
             throws IOException {
-        System.out.println("ChatEndpoint.onOpen()");
+        
+    	System.out.println("ChatEndpoint.onOpen()");
 
         //Numéro de la connection
         System.out.println("Connection number:" + session.getOpenSessions().size());
@@ -83,7 +84,6 @@ public class ChatJSONEndpointV2 {
                 
                 //Recupération des messsages:
                 List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
-                
                 broadcastHistory(chatMessages, session);
                 
                 
@@ -103,11 +103,6 @@ public class ChatJSONEndpointV2 {
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
                     broadcastHistory(chatMessages, session);
                     
-                    //Envoie de la liste des chatrooms à la vue
-                    ChatMessage infoMessage = new ChatMessage();
-                    infoMessage.setType("Liste chatrooms");
-                    infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
-                    broadcastListChatroom(infoMessage, session);
                     
                     
                 } else if (demandeursParChatRoom.containsKey(chatRoom)) {
@@ -117,6 +112,7 @@ public class ChatJSONEndpointV2 {
                     
                     if ("demandeur".equals(getUtilisateurParUserId(existingUser).getRole())) {
                         // C'est un demandeur, refusez la connexion
+                    	
                     	System.out.println("Chatroom deja utilisée par autre demandeur");
                         session.close();
                         } 
@@ -145,11 +141,6 @@ public class ChatJSONEndpointV2 {
                     System.out.println("Utilisateur existant :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
                     this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
                     
-                    //Envoie de la liste des chatrooms à la vue
-                    ChatMessage infoMessage = new ChatMessage();
-                    infoMessage.setType("Liste chatrooms");
-                    infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
-                    broadcastListChatroom(infoMessage, session);
                     
                     //Recupération des messsages:
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
@@ -178,6 +169,7 @@ public class ChatJSONEndpointV2 {
                 broadcastHistory(chatMessages, session);
                 
                 
+                
             } else {
             //C'est un demandeur
             	
@@ -201,29 +193,15 @@ public class ChatJSONEndpointV2 {
                     List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
                     broadcastHistory(chatMessages, session);
                     
-                    //Envoie de la liste des chatrooms à la vue
-                    ChatMessage infoMessage = new ChatMessage();
-                    infoMessage.setType("Liste chatrooms");
-                    infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());
-                    broadcastListChatroom(infoMessage, session);
                 }
             }
         }
 
-        // Créer un nouvel objet ChatMessage et définir les propriétés
-//        ChatMessage newChatMessage = new ChatMessage();
-//        newChatMessage.setRole(role);
-//        newChatMessage.setUserId(userName);
-//        newChatMessage.setSessionId(session.getId());
-//        newChatMessage.setChatroomId(chatRoom);
-        
         //Remplissage des listes info utilisateur pour l'afficher lors de l'envoie du Chatmessage
         userRoles.put(session.getId(), role);
         userNames.put(session.getId(), userName);
         chatIds.put(session.getId(), chatRoom);
         
-        // Utiliser cet objet pour diffuser un message
-        //this.broadcastObjectMessage(newChatMessage, userName, null, allChatRooms.get(session.getId()));
     }
     
     @OnMessage
@@ -347,17 +325,7 @@ public class ChatJSONEndpointV2 {
             e.printStackTrace();
         }
     }
-
-//    private void broadcastListChatroom(List<String> chatrooms, Session session) {
-//        chatrooms.forEach(message -> {
-//            try {
-//                session.getBasicRemote().sendObject(message);
-//            } catch (IOException | EncodeException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
-       
+      
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
@@ -366,5 +334,13 @@ public class ChatJSONEndpointV2 {
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);
+    }
+    
+    public static List<String> getExisting() {
+    	return existingChatroom;
+    }
+    
+    public static List<ChatUtilisateur> getExisting2() {
+    	return existingUsers;
     }
 }

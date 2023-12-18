@@ -14,7 +14,7 @@ public class ChatWebSocketLauncher {
 	public static void main(String[] args) {
 		final Map<String, Object> serverProperties = new HashMap<>();
 		serverProperties.put(Server.STATIC_CONTENT_ROOT, "./static");
-		Server server = new Server("0.0.0.0", 8024, "/chatjsonwebsocket", serverProperties, ChatJSONEndpointV2.class);
+		Server server = new Server("0.0.0.0", 8024, "/chatjsonwebsocket", serverProperties, ChatJSONEndpointV2.class, ChatJSONRoomEndpoint.class);
 
 		try {
 			server.start();
