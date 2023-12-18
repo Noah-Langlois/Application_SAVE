@@ -75,7 +75,7 @@ const methods = {
   connect(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + state.current_chatroom + "/" + user
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + user + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
