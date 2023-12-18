@@ -58,8 +58,8 @@ const methods = {
         console.log(evt);
         const obj = JSON.parse(evt.data)
         if (obj.type=='Liste chatrooms') {
-          for (let i = 0 ; i < obj.chatrooms.length ; i++) {
-            state.discussions[i]=(obj.chatrooms[i])
+          for (let i = obj.chatrooms.length-1 ; i >= 0 ; i--) {
+            state.discussions[obj.chatrooms.length-1-i]=(obj.chatrooms[i])
             setDiscussionEmpty(true)
           }
         }
