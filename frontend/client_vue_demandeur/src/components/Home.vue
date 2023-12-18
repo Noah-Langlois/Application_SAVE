@@ -6,10 +6,12 @@ const router = useRouter()
 
 const store = inject('STORE')
 
+function setChatroomList(pvalue) {
+  store.methods.setChatroom(pvalue)
+
+}
+
 function changeRoute(value) {
-  if (value=='Chat') {
-    store.methods.setChatroom(document.getElementById("select_chatroom").value)
-  }
   console.log(store.system.debug)
   router.push({
     name: value
@@ -28,9 +30,10 @@ function changeRoute(value) {
             <div class="row mt-5">
                 <div class="col-2 ms-5 ">
                     <label>Discussions</label>
-                    <select id="select_chatroom" class="form-select">
-                      <option v-for="item in store.state.discussions">{{item}}</option>
-                    </select>
+                    <div id="select_chatroom" class="list-group" role="tablist">
+                      <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action"
+                      data-bs-toggle="list" role="tab" @click="setChatroomList({item}.item)">{{item}}</a>
+                    </div>
                     <button class="btn btn-primary mt-2" @click="changeRoute('Chat')">Connexion</button>
                 </div>
                 <div class="col mt-4">
