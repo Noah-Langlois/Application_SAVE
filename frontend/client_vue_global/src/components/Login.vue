@@ -7,15 +7,10 @@ const router = useRouter()
 const store = inject('STORE')
 store.methods.setUserType('demandeur')
 
-function changeRoute(value,user) {
-    store.methods.getChatrooms(user)
-    if (store.state.isWSConnected) {
-        store.methods.disConnect()
-    }
+
+function checkPassword(value,user) {
+    store.methods.getChatrooms(user, document.getElementById("login_password").value, value)
     console.log(store.system.debug)
-    router.push({
-        name: value
-    })
 }
 
 </script>
@@ -28,9 +23,10 @@ function changeRoute(value,user) {
         </div>
         <div class="col-2 m-4">
             <input type="text" class="form-control" id="login_password"/>
+            <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
         </div>
         <div class="m-4">
-            <button class="btn btn-primary" @click="changeRoute('Home',$route.params.id)">Confirmer</button>
+            <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
         </div>
     </main>
 </template>

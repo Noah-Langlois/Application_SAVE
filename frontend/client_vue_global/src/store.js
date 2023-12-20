@@ -1,4 +1,5 @@
 import { reactive, readonly } from 'vue'
+import router from './router/index.js';
 var ws;
 const system = reactive({
   debug: false
@@ -11,8 +12,13 @@ const state = reactive({
   isWSConnected: false,
   isDiscussionNotEmpty: false,
   userType: '',
-  isCurrentChatroomNotNull: false
+  isCurrentChatroomNotNull: false,
+  rightPassword: true
 })
+
+function setRightPassword(pValue) {
+  state.rightPassword = pValue
+}
 
 function setCurrentChatroomNotNull(pVale) {
   state.isCurrentChatroomNotNull = pVale
@@ -55,14 +61,15 @@ const methods = {
     }
   },
 
-  getChatrooms(user) {
+  getChatrooms(user, password, value) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user
+    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
         console.log(evt);
         setWSConnected(true);
+        setRightPassword(false)
     };
     ws.onmessage = function (evt) {
         console.log(evt);
@@ -73,6 +80,12 @@ const methods = {
             setDiscussionEmpty(true)
           }
         }
+        methods.disConnect()
+        router.push({
+          name: value,
+          params: {id: user}
+        })
+        setRightPassword(true)
     };
     ws.onerror = function (evt) {
         console.log(evt);
@@ -85,7 +98,7 @@ const methods = {
   connect(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.current_chatroom
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.password + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
@@ -143,6 +156,7 @@ const methods = {
 
   addDiscussion(pValue) {
     state.discussions.push(pValue)
+    setDiscussionEmpty(true)
   },
 
   clearMessageEntry() {
