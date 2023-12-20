@@ -35,7 +35,7 @@ function createAlerte(value,user) {
                         <input type="text" class="form-control"
                         id="discussion_title" aria-describedby="title_help">
                         <div id="title_help" class="form-text">
-                            Exemple : Témoin d'une agrresion / Victime d'une agression
+                            Exemple : Témoin d'une agresion / Victime d'une agression
                         </div>
                     </div>
                     <div class="mt-5">
@@ -43,7 +43,7 @@ function createAlerte(value,user) {
                         <textarea type="text" class="form-control"
                         id="description" aria-describedby="description_help"></textarea>
                         <div id="description_help" class="form-text">
-                            Raconte nous ton témoignange (de manière anonyme si tu le souhaite)
+                            Raconte nous ton témoignange (de manière anonyme si tu le souhaites)
                         </div>
                     </div>
             </div>

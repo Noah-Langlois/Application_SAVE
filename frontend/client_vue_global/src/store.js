@@ -96,7 +96,7 @@ const methods = {
         if (obj.type=='message chat') {
           var typeMessage = ''
           if (obj.userId != user) {
-            typeMessage = "message-bubble.right"
+            typeMessage = "message-bubble right"
           }
           else {
             typeMessage = "message-bubble"

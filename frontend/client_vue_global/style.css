@@ -7,13 +7,13 @@
     border: 0.062em solid #999;
     padding: 10px;
 }
+
 .message-bubble {
     position: relative;
     padding: 5px;
     /*padding-right: 15px;*/ /* Increased padding for better visibility */
     margin: 5px;
     border-radius: 10px;
-    background-color: #007bff; /* Set your desired background color */
     color: #fff; /* Set your desired text color */
     display: block; /* Allow the bubble to shrink to fit content */
     width: fit-content;
@@ -24,13 +24,14 @@
     animation-duration: 1s;
 }
 
-.message-bubble.right {
-    float: right;
-}
-
 @keyframes fade-in {
     from {opacity: 0; position: relative; top: 20px;}
     to {opacity: 1; position: relative; top: 0px;}
+}
+
+.message-bubble.left{
+    float: left;
+    background-color: #007bff;
 }
 
 .message-bubble.right {
@@ -38,7 +39,7 @@
     background-color: #4d4d4d;
 }
 
-.message-bubble::before {
+.message-bubble.left::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -47,6 +48,19 @@
     height: 0;
     border-top: 10px solid transparent;
     border-right: 15px solid #007bff; /* Match the background color of the bubble */
+    border-bottom: 10px solid transparent;
+    margin-top: -10px;
+}
+
+.message-bubble.right::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -15px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-left: 15px solid #4d4d4d;
     border-bottom: 10px solid transparent;
     margin-top: -10px;
 }
