@@ -24,6 +24,7 @@ function createAlerte(value,user) {
   })
 }
 
+
 </script>
 
 <template>

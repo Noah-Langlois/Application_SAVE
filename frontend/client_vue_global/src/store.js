@@ -13,8 +13,13 @@ const state = reactive({
   isDiscussionNotEmpty: false,
   userType: '',
   isCurrentChatroomNotNull: false,
-  rightPassword: true
+  rightPassword: true,
+  firstConnection : true,
 })
+
+function setFirstConnection(pValue) {
+  state.firstConnection = pValue
+}
 
 function setRightPassword(pValue) {
   state.rightPassword = pValue
@@ -59,6 +64,25 @@ const methods = {
     while (wsMessages.firstChild) {
         wsMessages.removeChild(wsMessages.firstChild);
     }
+  },
+
+  firstConnect(user) {
+    const wsURIFirstConnection = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user
+    ws = new WebSocket(wsURIFirstConnection);
+    ws.onopen = function (evt) {
+      console.log(evt);
+      setWSConnected(true);
+    };
+    ws.onmessage = function (evt) {
+      console.log(evt);
+      const obj = JSON.parse(evt.data)
+      if (obj.type == 'Nouvel utilisateur') {
+        setFirstConnection(true)
+      }
+      if (obj.type == 'Utilisateur existant') {
+        setFirstConnection(false)
+      }
+    };
   },
 
   getChatrooms(user, password, value) {
