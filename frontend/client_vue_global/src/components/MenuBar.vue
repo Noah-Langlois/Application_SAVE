@@ -7,6 +7,8 @@ const route = useRoute()
 
 const store = inject('STORE')
 
+
+
 function isActiveRoute(value) {
   return route.name === value
 }
@@ -24,6 +26,7 @@ function changeRoute(value) {
     <nav class="navbar navbar-expand-lg sticky-top bg-primary" data-bs-theme="dark">
       <div class="container-fluid">
         <span class="navbar-brand">SAVE</span>
+        <img src="../../img/logo_save.png" alt="logo" width="50" height="50" />
         <div id="navbarNav" class="collapse navbar-collapse">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
