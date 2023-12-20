@@ -20,17 +20,44 @@ store.methods.firstConnect(route.params.id)
 <template>
     <main>
         <div class="row">
-            <div class="m-4">
-                <h1>Login</h1>
-                <h1 v-if="store.state.firstConnection">Première Connexion</h1>
+        </div>
+        <div class="row" v-if="!store.state.firstConnection">
+            <div class="col-2 m-4">
+                <h1 class="mb-4 mt-4">Connexion</h1>
+                <label>Code PIN</label>
+                <input type="text" class="form-control" id="login_password"/>
+                <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
+                <div class="mt-4">
+                    <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                </div>
             </div>
         </div>
-        <div class="col-2 m-4">
-            <input type="text" class="form-control" id="login_password"/>
-            <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
-        </div>
-        <div class="m-4">
-            <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+        <div class="row" v-else>
+            <div class="m-4">
+                <h1 class="mt-4">Bienvenue sur SAVE</h1>
+                <p class="mb-5">Signalement Anonyme des Violences à l'ENSMA</p>
+                <div class="row">
+                    <div class="col-4">
+                        <label>Veuillez initialiser votre code PIN : </label>
+                        <input type="text" class="form-control" id="login_password" style="width: 18rem;"/>
+                        <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
+                        <div class="mt-4">
+                            <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                        </div>
+                    </div>
+                    <div class="col ms-5">
+                        <div class="card" style="width: 40rem;">                   
+                            <div class="card-body">
+                                <ul>
+                                    <li>Signaler des évenements inappropriés au CESA</li>
+                                    <li>Discuter de manière complétement anonyme</li>
+                                    <li>Trouver des solutions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </template>
