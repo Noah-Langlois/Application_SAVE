@@ -19,7 +19,7 @@ public class ChatWebSocketLauncher {
 		try {
 			server.start();
 
-			System.out.println("Tyrus app started available at ws://localhost:8029/chatjsonwebsocket"
+			System.out.println("Tyrus app started available at ws://localhost:8024/chatjsonwebsocket"
 					+ "\nHit enter to stop it...");
 
 			System.in.read();

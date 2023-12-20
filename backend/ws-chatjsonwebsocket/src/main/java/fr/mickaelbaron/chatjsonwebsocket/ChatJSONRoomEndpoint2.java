@@ -2,8 +2,6 @@ package fr.mickaelbaron.chatjsonwebsocket;
 
 import java.io.IOException;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import jakarta.websocket.EncodeException;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
@@ -14,21 +12,17 @@ import jakarta.websocket.server.ServerEndpoint;
  * @author Florine
  * Serveur pour l'application BE-SAVE
  */
-@ServerEndpoint(value = "/chat/{role}/{username}/{password}",
+@ServerEndpoint(value = "/chat/{role}/{username}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
-public class ChatJSONRoomEndpoint {
+public class ChatJSONRoomEndpoint2 {
 	
 		
 		
 	@OnOpen
-    public void onOpen(Session session, @PathParam("username") String userName, @PathParam("role") String role, @PathParam("password") String password) throws IOException {
+    public void onOpen(Session session, @PathParam("username") String userName, @PathParam("role") String role) throws IOException {
         System.out.println("ChatEndpoint.onOpen()");
-
-        String hashedPasswordFromDatabase = ChatDAO.getHashedPasswordByUsername(userName);
-
-        
         
         //Renvoie l'utilisateur s'il existe ou NULL sinon, grace au username
         ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
@@ -36,18 +30,8 @@ public class ChatJSONRoomEndpoint {
         //Les différents cas:
         
         if (utilisateurExistant != null) {
-        	// L'utilisateur existe déjà
+        // L'utilisateur existe déjà
         	
-        	// Vérifier le mot de passe
-            if (hashedPasswordFromDatabase == null || !BCrypt.checkpw(password, hashedPasswordFromDatabase)) {
-                // Mot de passe incorrect, refuser l'accès
-            	System.out.println("Mauvais mot de passe!");
-                session.close();
-                return;
-            }
-            System.out.println("Bon mot de passe!");
-            System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId());
-                	
             if ("admin".equals(utilisateurExistant.getRole())) {
             // Si admin connexion possible a toutes les conversations
             	
@@ -56,7 +40,8 @@ public class ChatJSONRoomEndpoint {
                 infoMessage.setType("Liste chatrooms");
                 infoMessage.setChatrooms(ChatJSONEndpointV2.getExisting());
                 broadcastListChatroom(infoMessage, session);
-                                
+                
+                
                 } else {
                     //Envoie de la liste des chatrooms à la vue
                     ChatMessage infoMessage = new ChatMessage();
@@ -72,12 +57,6 @@ public class ChatJSONRoomEndpoint {
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole(role);
-            ChatJSONEndpointV2.getExisting2().add(nouvelUtilisateur);
-            
-            String hashedPassword = PasswordHashing.hashPassword(password);
-            ChatDAO.saveHashedPassword(userName, hashedPassword);
-            System.out.println("Enregistrement du mot de passe");
-            System.out.println("Nouvel utilisateur:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
 
             if ("admin".equals(nouvelUtilisateur.getRole())) {
             // Si c'est un nouvel admin, alors toutes les chatroom autorisées

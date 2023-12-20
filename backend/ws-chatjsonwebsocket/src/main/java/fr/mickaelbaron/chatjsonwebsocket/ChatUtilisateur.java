@@ -44,5 +44,6 @@ public class ChatUtilisateur {
 	public void supprimerChatroom(String chatroom) {
 		chatrooms.remove(chatroom);
 	}
+	
 
 }

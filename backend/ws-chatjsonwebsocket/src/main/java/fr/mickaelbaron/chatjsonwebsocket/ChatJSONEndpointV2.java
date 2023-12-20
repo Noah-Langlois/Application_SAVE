@@ -25,7 +25,7 @@ import jakarta.websocket.server.ServerEndpoint;
  * @author Florine
  * Serveur pour l'application BE-SAVE
  */
-@ServerEndpoint(value = "/chat/{role}/{username}/{chatroom}",
+@ServerEndpoint(value = "/chat/{role}/{username}/{password}/{chatroom}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
@@ -71,7 +71,7 @@ public class ChatJSONEndpointV2 {
         
         //Les différents cas:
         
-        if (utilisateurExistant != null) {
+//        if (utilisateurExistant != null) {
         // L'utilisateur existe déjà
         	
             if ("admin".equals(utilisateurExistant.getRole())) {
@@ -149,53 +149,53 @@ public class ChatJSONEndpointV2 {
                 }
             }
             
-        } else {
-          // L'utilisateur n'existe pas, créer un nouvel utilisateur
-        	
-            ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
-            nouvelUtilisateur.setUserId(userName);
-            nouvelUtilisateur.setRole(role);
-
-            if ("admin".equals(nouvelUtilisateur.getRole())) {
-            // Si c'est un nouvel admin, alors toutes les chatroom autorisées
-            	
-            	allUsers.put(session.getId(), userName);
-                allSessions.put(userName, session);
-                System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
-                this.broadcastStringMessage(userName + " connected!", session, chatRoom);
-                existingUsers.add(nouvelUtilisateur);
-                //Recupération des messsages:
-                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
-                broadcastHistory(chatMessages, session);
-                
-                
-                
-            } else {
-            //C'est un demandeur
-            	
-            	if (existingChatroom.contains(chatRoom)) {
-                // La chatroom existe déjà, refusez la connexion
-            		
-            		System.out.println("Vous etes nouveau mais Chatroom deja prise");
-                    session.close();
-                    
-                } else {
-                // La chatroom n'existe pas, ajoutez-la et connectez le nouvel utilisateur
-                	
-                    nouvelUtilisateur.ajouterChatroom(chatRoom);
-                    demandeursParChatRoom.put(chatRoom, userName);
-                    allUsers.put(session.getId(), userName);
-                    allSessions.put(userName, session);
-                    existingChatroom.add(chatRoom);
-                    System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
-                    this.broadcastStringMessage(userName + " connected!", session, chatRoom);
-                    existingUsers.add(nouvelUtilisateur);
-                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
-                    broadcastHistory(chatMessages, session);
-                    
-                }
-            }
-        }
+//        } else {
+//          // L'utilisateur n'existe pas, créer un nouvel utilisateur
+//        	
+//            ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
+//            nouvelUtilisateur.setUserId(userName);
+//            nouvelUtilisateur.setRole(role);
+//
+//            if ("admin".equals(nouvelUtilisateur.getRole())) {
+//            // Si c'est un nouvel admin, alors toutes les chatroom autorisées
+//            	
+//            	allUsers.put(session.getId(), userName);
+//                allSessions.put(userName, session);
+//                System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
+//                this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+//                existingUsers.add(nouvelUtilisateur);
+//                //Recupération des messsages:
+//                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+//                broadcastHistory(chatMessages, session);
+//                
+//                
+//                
+//            } else {
+//            //C'est un demandeur
+//            	
+//            	if (existingChatroom.contains(chatRoom)) {
+//                // La chatroom existe déjà, refusez la connexion
+//            		
+//            		System.out.println("Vous etes nouveau mais Chatroom deja prise");
+//                    session.close();
+//                    
+//                } else {
+//                // La chatroom n'existe pas, ajoutez-la et connectez le nouvel utilisateur
+//                	
+//                    nouvelUtilisateur.ajouterChatroom(chatRoom);
+//                    demandeursParChatRoom.put(chatRoom, userName);
+//                    allUsers.put(session.getId(), userName);
+//                    allSessions.put(userName, session);
+//                    existingChatroom.add(chatRoom);
+//                    System.out.println("Nouvel utilisateur :" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId() + ", " + chatRoom);
+//                    this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+//                    existingUsers.add(nouvelUtilisateur);
+//                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+//                    broadcastHistory(chatMessages, session);
+//                    
+//                }
+//            }
+//        }
 
         //Remplissage des listes info utilisateur pour l'afficher lors de l'envoie du Chatmessage
         userRoles.put(session.getId(), role);
@@ -316,16 +316,7 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-    
-    //Afficher la liste des chatroom
-    private void broadcastListChatroom(ChatMessage message, Session session) {
-        try {
-            session.getBasicRemote().sendObject(message);
-        } catch (IOException | EncodeException e) {
-            e.printStackTrace();
-        }
-    }
-      
+          
     private ChatUtilisateur getUtilisateurParUserId(String userId) {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
