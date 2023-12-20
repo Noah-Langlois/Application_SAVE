@@ -99,7 +99,7 @@ const methods = {
             typeMessage = "message-bubble right"
           }
           else {
-            typeMessage = "message-bubble"
+            typeMessage = "message-bubble left"
           }
           methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
         }
