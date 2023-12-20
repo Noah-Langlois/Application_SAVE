@@ -5,17 +5,16 @@ import { inject } from 'vue'
 const router = useRouter()
 
 const store = inject('STORE')
+store.methods.setUserType('demandeur')
 
-function changeRoute(value) {
-    let user = document.getElementById("login_pseudo").value
-    store.methods.getChatroomsAdmin(user)
+function changeRoute(value,user) {
+    store.methods.getChatrooms(user)
     if (store.state.isWSConnected) {
         store.methods.disConnect()
     }
     console.log(store.system.debug)
     router.push({
-        name: value,
-        params: {id: user}
+        name: value
     })
 }
 
@@ -28,15 +27,10 @@ function changeRoute(value) {
             </div>
         </div>
         <div class="col-2 m-4">
-            <label>Pseudo</label>
-            <input type="text" class="form-control" id="login_pseudo"/>
-        </div>
-        <div class="col-2 m-4">
-            <label>Mot de passe</label>
             <input type="text" class="form-control" id="login_password"/>
         </div>
         <div class="m-4">
-            <button class="btn btn-primary" @click="changeRoute('HomeAdmin')">Confirmer</button>
+            <button class="btn btn-primary" @click="changeRoute('Home',$route.params.id)">Confirmer</button>
         </div>
     </main>
 </template>

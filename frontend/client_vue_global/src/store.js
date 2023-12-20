@@ -21,15 +21,17 @@ function setDiscussionEmpty(pValue) {
   state.isDiscussionNotEmpty = pValue
 }
 
-function setUserType(pValue) {
-  state.userType = pValue
-}
+
 
 const methods = {
   NewAlerte() {
     var message = {content : state.DescriptionNewAlerte, created : new Date(), browser : navigator.product}
     ws.send(JSON.stringify(message));
     methods.setDescriptionNewAlerte('')
+  },
+
+  setUserType(pValue) {
+    state.userType = pValue
   },
 
   writeMessage(pValue, pType) {
@@ -48,11 +50,10 @@ const methods = {
     }
   },
 
-  getChatroomsAdmin(user) {
+  getChatrooms(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + user
-    setUserType('admin')
+    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
         console.log(evt);
@@ -66,33 +67,6 @@ const methods = {
             state.discussions[obj.chatrooms.length-1-i]=(obj.chatrooms[i])
             setDiscussionEmpty(true)
           }
-        }
-    };
-    ws.onerror = function (evt) {
-        console.log(evt);
-    };
-    ws.onclose = function (evt) {
-      setWSConnected(false);
-    }
-  },
-
-
-  getChatrooms(user) {
-    var host = document.location.host;
-    var pathname = document.location.pathname;
-    const wsURIChatrooms = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/demandeur/" + user
-    setUserType('demandeur')
-    ws = new WebSocket(wsURIChatrooms);
-    ws.onopen = function (evt) {
-        console.log(evt);
-        setWSConnected(true);
-    };
-    ws.onmessage = function (evt) {
-        console.log(evt);
-        const obj = JSON.parse(evt.data)
-        for (let i = obj.chatrooms.length-1 ; i >= 0 ; i--) {
-          state.discussions[obj.chatrooms.length-1-i]=(obj.chatrooms[i])
-          setDiscussionEmpty(true)
         }
     };
     ws.onerror = function (evt) {
@@ -120,7 +94,14 @@ const methods = {
         console.log(evt);
         const obj = JSON.parse(evt.data)
         if (obj.type=='message chat') {
-          methods.writeMessage(obj.role + " : " + obj.content);
+          var typeMessage = ''
+          if (obj.userId != user) {
+            typeMessage = "message-bubble.right"
+          }
+          else {
+            typeMessage = "message-bubble"
+          }
+          methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
         }
         if (obj.type=='Liste chatrooms') {
           for (let i = 1 ; i < obj.chatrooms.length ; i++) {
