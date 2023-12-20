@@ -14,6 +14,8 @@ import jakarta.websocket.server.ServerEndpoint;
  * @author Florine
  * Serveur pour l'application BE-SAVE
  */
+
+//AUTHENTIFICATION ET LISTE DES CHATROOMS
 @ServerEndpoint(value = "/chat/{role}/{username}/{password}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
@@ -54,7 +56,7 @@ public class ChatJSONRoomEndpoint {
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatJSONEndpointV2.getExisting());
+                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
                                 
                 } else {
@@ -72,7 +74,7 @@ public class ChatJSONRoomEndpoint {
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole(role);
-            ChatJSONEndpointV2.getExisting2().add(nouvelUtilisateur);
+            ChatDAO.getExistingUsers().add(nouvelUtilisateur);
             
             String hashedPassword = PasswordHashing.hashPassword(password);
             ChatDAO.saveHashedPassword(userName, hashedPassword);
@@ -86,7 +88,7 @@ public class ChatJSONRoomEndpoint {
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatJSONEndpointV2.getExisting());
+                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
                 
                 
@@ -120,7 +122,7 @@ public class ChatJSONRoomEndpoint {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
     	
-        return ChatJSONEndpointV2.getExisting2().stream()
+        return ChatDAO.getExistingUsers().stream()
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);

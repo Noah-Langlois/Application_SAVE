@@ -38,7 +38,7 @@ public class ChatJSONRoomEndpoint2 {
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatJSONEndpointV2.getExisting());
+                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
                 
                 
@@ -65,7 +65,7 @@ public class ChatJSONRoomEndpoint2 {
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatJSONEndpointV2.getExisting());
+                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
                 
                 
@@ -99,7 +99,7 @@ public class ChatJSONRoomEndpoint2 {
     //Verifier si l'userId fait parti des userId deja existant
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
     	
-        return ChatJSONEndpointV2.getExisting2().stream()
+        return ChatDAO.getExistingUsers().stream()
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);
