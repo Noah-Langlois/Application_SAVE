@@ -9,7 +9,8 @@ const state = reactive({
   current_chatroom: '',
   DescriptionNewAlerte: '',
   isWSConnected: false,
-  isDiscussionNotEmpty: false
+  isDiscussionNotEmpty: false,
+  userType: ''
 })
 
 function setWSConnected(pValue) {
@@ -18,6 +19,10 @@ function setWSConnected(pValue) {
 
 function setDiscussionEmpty(pValue) {
   state.isDiscussionNotEmpty = pValue
+}
+
+function setUserType(pValue) {
+  state.userType = pValue
 }
 
 const methods = {
@@ -43,11 +48,40 @@ const methods = {
     }
   },
 
+  getChatroomsAdmin(user) {
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/admin/" + user
+    setUserType('admin')
+    ws = new WebSocket(wsURIChatroomsAdmin);
+    ws.onopen = function (evt) {
+        console.log(evt);
+        setWSConnected(true);
+    };
+    ws.onmessage = function (evt) {
+        console.log(evt);
+        const obj = JSON.parse(evt.data)
+        if (obj.type=='Liste chatrooms') {
+          for (let i = obj.chatrooms.length-1 ; i >= 0 ; i--) {
+            state.discussions[obj.chatrooms.length-1-i]=(obj.chatrooms[i])
+            setDiscussionEmpty(true)
+          }
+        }
+    };
+    ws.onerror = function (evt) {
+        console.log(evt);
+    };
+    ws.onclose = function (evt) {
+      setWSConnected(false);
+    }
+  },
+
+
   getChatrooms(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
     const wsURIChatrooms = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/demandeur/" + user
-
+    setUserType('demandeur')
     ws = new WebSocket(wsURIChatrooms);
     ws.onopen = function (evt) {
         console.log(evt);
@@ -69,11 +103,10 @@ const methods = {
     }
   },
 
-
   connect(user) {
     var host = document.location.host;
     var pathname = document.location.pathname;
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/demandeur/" + user + "/" + state.current_chatroom
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
