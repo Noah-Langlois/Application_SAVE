@@ -3,7 +3,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { inject } from 'vue'
 
 const router = useRouter()
-
 const store = inject('STORE')
 
 function changeRoute(value, user) {

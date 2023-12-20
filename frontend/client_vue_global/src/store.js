@@ -1,6 +1,8 @@
 import { reactive, readonly } from 'vue'
 import router from './router/index.js';
+import fb_sound from '../sounds/Facebook-message-sound.mp3'
 var ws;
+var audio = new Audio(fb_sound)
 const system = reactive({
   debug: false
 })
@@ -57,6 +59,7 @@ const methods = {
     var wsMessages = document.getElementById("wsMessages");
     wsMessages.appendChild(newElement);
     wsMessages.scrollTop = wsMessages.scrollHeight;
+    audio.play()
   },
 
   clearMessages() {
