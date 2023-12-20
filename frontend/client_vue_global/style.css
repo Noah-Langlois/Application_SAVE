@@ -22,6 +22,8 @@
     margin-right: 20px; /* Auto right margin to align nicely */
     animation-name: fade-in;
     animation-duration: 1s;
+    --colour-left: #007bff;
+    --colour-right: #4d4d4d;
 }
 
 @keyframes fade-in {
@@ -42,22 +44,22 @@
 
 .message-bubble.left{
     float: left;
-    background-color: #007bff;
+    background-color: var(--colour-left);
 }
 
 .message-bubble.right {
     float: right;
-    background-color: #4d4d4d;
+    background-color: var(--colour-right);
 }
 
 .message-bubble.left::before {
     right: 100%;
-    border-right: 15px solid #007bff; /* Match the background color of the bubble */
+    border-right: 15px solid var(--colour-left);
 }
 
 .message-bubble.right::before {
     right: -15px;
-    border-left: 15px solid #4d4d4d;
+    border-left: 15px solid var(--colour-right);
 }
 
 .info-text {
@@ -81,9 +83,6 @@
     height: 15px;
     border-radius: 50%; /* Make it a circle */
     display: inline-block;
-    /* position: absolute;
-    top: 50%;
-    transform: translateY(-50%); */
     margin-left: 30px;
   }
   
