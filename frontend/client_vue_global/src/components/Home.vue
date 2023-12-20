@@ -49,7 +49,7 @@ function changeRoute(value) {
                       <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
                     </div>
                 </div>
-                <div class="col ms-5">
+                <div class="col ms-5" v-show="store.state.isCurrentChatroomNotNull">
                   <Chat/>
                 </div>
             </div>

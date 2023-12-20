@@ -10,8 +10,13 @@ const state = reactive({
   DescriptionNewAlerte: '',
   isWSConnected: false,
   isDiscussionNotEmpty: false,
-  userType: ''
+  userType: '',
+  isCurrentChatroomNotNull: false
 })
+
+function setCurrentChatroomNotNull(pVale) {
+  state.isCurrentChatroomNotNull = pVale
+}
 
 function setWSConnected(pValue) {
   state.isWSConnected = pValue
@@ -125,6 +130,7 @@ const methods = {
 
   setChatroom(pValue) {
     state.current_chatroom = pValue;
+    setCurrentChatroomNotNull(true)
   },
 
   setDescriptionNewAlerte(pValue) {
