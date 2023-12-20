@@ -56,5 +56,32 @@ public class ChatDAO {
     	return existingDemandeur;
     }
     
+    static {
+        ChatUtilisateur superAdmin = new ChatUtilisateur();
+        superAdmin.setUserId("SuperAdmin");
+        superAdmin.setRole("admin");
+        existingUsers.add(superAdmin);
+        existingAdmin.add(superAdmin);
+        // Définir le mot de passe pour le SuperAdmin (à remplacer par un mot de passe sécurisé)
+        String superAdminPassword = "Papapawww";
+        String hashedPassword = PasswordHashing.hashPassword(superAdminPassword);
+        ChatDAO.saveHashedPassword(superAdmin.getUserId(), hashedPassword);
+    }
+    
+    
+    public static void addAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin, String newPassword) {
+        // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+        if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
+            // Définir le mot de passe pour le nouvel administrateur
+            String hashedPassword = PasswordHashing.hashPassword(newPassword);
+            ChatDAO.saveHashedPassword(newAdmin.getUserId(), hashedPassword);
+
+            // Ajouter le nouvel administrateur à la liste
+            existingAdmin.add(newAdmin);
+        } else {
+            // L'utilisateur n'a pas les droits pour ajouter un administrateur
+            throw new IllegalStateException("Seul le SuperAdmin peut ajouter des administrateurs.");
+        }
+    }
 }
 

@@ -30,10 +30,15 @@ public class ChatJSONRoomEndpoint {
 
         String hashedPasswordFromDatabase = ChatDAO.getHashedPasswordByUsername(userName);
 
-        
-        
         //Renvoie l'utilisateur s'il existe ou NULL sinon, grace au username
         ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
+        
+        if ("SuperAdmin".equals(userName) && "admin".equals(role)) {
+        	ChatUtilisateur newAdmin = new ChatUtilisateur();
+            newAdmin.setUserId("NewAdmin");
+            newAdmin.setRole("admin");
+            ChatDAO.addAdminWithPassword(utilisateurExistant, newAdmin, "NouveauMotDePasse123");
+        }
         
         //Les différents cas:
         
@@ -50,8 +55,8 @@ public class ChatJSONRoomEndpoint {
             System.out.println("Bon mot de passe!");
             System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId());
                 	
-            if ("admin".equals(utilisateurExistant.getRole())) {
-            // Si admin connexion possible a toutes les conversations
+            if ((getAdminParUserId(userName)) != null) {
+            // c'est un admin qui est dans la liste
             	
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
@@ -59,14 +64,19 @@ public class ChatJSONRoomEndpoint {
                 infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
                                 
-                } else {
+                } else if ("demandeur".equals(role)){
                     //Envoie de la liste des chatrooms à la vue
                     ChatMessage infoMessage = new ChatMessage();
                     infoMessage.setType("Liste chatrooms");
                     infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
                     broadcastListChatroom(infoMessage, session);
                                         
-                }} 
+                } else {
+                	System.out.println("Admin pas dans la liste");
+                    session.close();
+                    return;
+                	} 
+                }
             
          else {
           // L'utilisateur n'existe pas, créer un nouvel utilisateur
@@ -81,32 +91,28 @@ public class ChatJSONRoomEndpoint {
             System.out.println("Enregistrement du mot de passe");
             System.out.println("Nouvel utilisateur:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
 
-            if ("admin".equals(nouvelUtilisateur.getRole())) {
-            // Si c'est un nouvel admin, alors toutes les chatroom autorisées
-      
-                
-                //Envoie de la liste des chatrooms à la vue
-                ChatMessage infoMessage = new ChatMessage();
-                infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
-                broadcastListChatroom(infoMessage, session);
-                
-                
-            } else {
-            //C'est un demandeur
-            	
-            	
-                    
+//            if ("admin".equals(nouvelUtilisateur.getRole())) {
+//            // Si c'est un nouvel admin, alors toutes les chatroom autorisées
+//      
+//                
+//                //Envoie de la liste des chatrooms à la vue
+//                ChatMessage infoMessage = new ChatMessage();
+//                infoMessage.setType("Liste chatrooms");
+//                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
+//                broadcastListChatroom(infoMessage, session);
+//                
+//                
+//            } else {
+//            //C'est un demandeur
+                                
                 //Envoie de la liste des chatrooms à la vue
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
                 infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());
                 broadcastListChatroom(infoMessage, session);
-                }
+//                }
             }
-        
-
-    
+          
     }
 	
     //Afficher la liste des chatroom
@@ -123,6 +129,16 @@ public class ChatJSONRoomEndpoint {
     //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
     	
         return ChatDAO.getExistingUsers().stream()
+                .filter(utilisateur -> utilisateur.getUserId().equals(userId))
+                .findFirst()
+                .orElse(null);
+    }
+    
+    private ChatUtilisateur getAdminParUserId(String userId) {
+    //Verifier si l'userId fait parti des userId deja existant
+    //Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant
+    	
+        return ChatDAO.getAdmin().stream()
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);
