@@ -154,6 +154,10 @@ const methods = {
             setDiscussionEmpty(true)
           }
         }
+        if (obj.type=='Notification') {
+          // TODO : add notifications on concerned chatrooms
+          methods.writeMessage("Info : new message in chatroom " + obj.chatroomId, "info-text");
+        }
     };
     ws.onerror = function (evt) {
         console.log(evt);

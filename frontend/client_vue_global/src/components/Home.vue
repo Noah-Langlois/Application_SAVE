@@ -27,7 +27,6 @@ function changeRoute(value) {
   })
 }
 
-
 </script>
 
 <template>
@@ -44,6 +43,9 @@ function changeRoute(value) {
                     </div>
                     <div class="mt-4 ms-4">
                       <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
                     </div>
                 </div>
                 <div class="col ms-5 mt-4" v-show="store.state.isCurrentChatroomNotNull">
