@@ -8,7 +8,10 @@ import jakarta.websocket.Encoder;
 import jakarta.websocket.EndpointConfig;
 
 /**
+ * Encodage des fichiers JSON
+ * 
  * @author Mickael BARON (baron.mickael@gmail.com)
+ * @see BE-SAVE
  */
 public class ChatMessageEncoder implements Encoder.Text<ChatMessage> {
 

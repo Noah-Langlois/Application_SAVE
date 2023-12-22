@@ -4,10 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Modelise les messages info/chat envoyé à l'interface
+ * 
  * @author Florine
- * Definition de la classe ChatMesssage
- * rassemblant toutes les infos necessaire à l'affichage et au stockage
- * Appli BE-SAVE
+ * @version 1.0.0
+ * @see BE-SAVE
  */
 public class ChatMessage {
 	
