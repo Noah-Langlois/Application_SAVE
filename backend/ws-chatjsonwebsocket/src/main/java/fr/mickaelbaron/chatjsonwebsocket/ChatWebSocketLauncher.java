@@ -6,8 +6,10 @@ import java.util.Map;
 import org.glassfish.tyrus.server.Server;
 
 /**
- * @author Mickael BARON (baron.mickael@gmail.com)
  * Launcher du serveur AppliBE-SAVE
+ * 
+ * @author Mickael BARON (baron.mickael@gmail.com)
+ * @see BE-SAVE
  */
 public class ChatWebSocketLauncher {
 

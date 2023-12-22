@@ -7,6 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Modelise la base de donnee
+ * 
+ * @author Florine
+ * @version 1.0.0
+ * @see BE-SAVE
+ */
 public class ChatDAO {
 
     // Simule une base de données en utilisant une structure de données en mémoire

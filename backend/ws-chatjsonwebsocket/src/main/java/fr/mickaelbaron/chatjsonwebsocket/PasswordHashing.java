@@ -2,6 +2,13 @@ package fr.mickaelbaron.chatjsonwebsocket;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+/**
+ * hashing des mots de passe
+ * 
+ * @author teulierf
+ * @see BE-SAVE
+ */
+
 public class PasswordHashing {
     public static String hashPassword(String plainPassword) {
         // Générer un sel (salt) aléatoire

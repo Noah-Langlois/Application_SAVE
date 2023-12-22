@@ -10,7 +10,10 @@ import jakarta.websocket.Decoder;
 import jakarta.websocket.EndpointConfig;
 
 /**
+ * Decodage des message JSON
+ * 
  * @author Mickael BARON (baron.mickael@gmail.com)
+ * @see BE-SAVE
  */
 public class ChatMessageDecoder implements Decoder.Text<ChatMessage> {
 
