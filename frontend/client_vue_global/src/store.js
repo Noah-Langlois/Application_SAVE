@@ -40,7 +40,6 @@ function setDiscussionEmpty(pValue) {
 }
 
 
-
 const methods = {
   NewAlerte() {
     var message = {content : state.DescriptionNewAlerte, created : new Date(), browser : navigator.product}
@@ -55,7 +54,7 @@ const methods = {
   writeMessage(pValue, pType) {
     var newElement = document.createElement("div");
     newElement.textContent = pValue;
-    newElement.className = pType || "message-bubble"; // by default, a message is displayed as a bubble message
+    newElement.className = pType;
     var wsMessages = document.getElementById("wsMessages");
     wsMessages.appendChild(newElement);
     wsMessages.scrollTop = wsMessages.scrollHeight;
@@ -140,12 +139,12 @@ const methods = {
         const obj = JSON.parse(evt.data)
         if (obj.type=='message chat') {
           var typeMessage = ''
-          if (obj.userId != user) {
-            // The current message comes from another user
-            typeMessage = "message-bubble right"
+          if (obj.userId == user) {
+            // The message comes from the current user
+            typeMessage = "message-bubble left"
           }
           else {
-            typeMessage = "message-bubble left"
+            typeMessage = "message-bubble right"
           }
           methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
         }
