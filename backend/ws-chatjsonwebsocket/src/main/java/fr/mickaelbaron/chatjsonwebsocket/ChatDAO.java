@@ -19,11 +19,14 @@ public class ChatDAO {
     // Simule une base de données en utilisant une structure de données en mémoire
     private static ConcurrentHashMap<String, List<ChatMessage>> chatMessagesByChatroom = new ConcurrentHashMap<>();
     private static Map<String, String> hashedPasswordsByUser = new HashMap<>();
+    
     //Liste des utilisateur existant
   	private static List<ChatUtilisateur> existingUsers = Collections.synchronizedList(new ArrayList<>());
-  	
   	private static List<ChatUtilisateur> existingAdmin = Collections.synchronizedList(new ArrayList<>()); 
   	private static List<ChatUtilisateur> existingDemandeur = Collections.synchronizedList(new ArrayList<>()); 
+  	
+	//Liste des demandeurs + IdChatroom, pour unique demandeur par chatroom
+	private static Map<String, String> demandeursParChatRoom = new HashMap<>();
   	
   	//Liste des chatroom existante
   	private static List<String> existingChatroom = Collections.synchronizedList(new ArrayList<>());
@@ -61,6 +64,14 @@ public class ChatDAO {
     
     public static List<ChatUtilisateur> getDemandeur() {
     	return existingDemandeur;
+    }
+    
+    public static Map<String, String> getDemandeurparChatroom() {
+    	return demandeursParChatRoom;
+    }
+    
+    public static void addDemandeurParChatroom(String chatroom, String username) {
+    	demandeursParChatRoom.put(chatroom, username);
     }
     
     static {
