@@ -15,7 +15,9 @@ function changeRoute(value) {
 
 function createAlerte(value,user) {
     store.methods.setChatroom(document.getElementById("discussion_title").value)
+    document.getElementById("discussion_title").value = ""
     store.methods.setDescriptionNewAlerte(document.getElementById("description").value)
+    document.getElementById("description").value = ""
     store.methods.addDiscussion(store.state.current_chatroom)
     store.methods.connect(user)
     console.log(store.system.debug)
@@ -44,7 +46,7 @@ function createAlerte(value,user) {
                         <textarea type="text" class="form-control"
                         id="description" aria-describedby="description_help"></textarea>
                         <div id="description_help" class="form-text">
-                            Raconte nous ton témoignange (de manière anonyme si tu le souhaites)
+                            Raconte nous ton témoignage (de manière anonyme si tu le souhaites)
                         </div>
                     </div>
             </div>
