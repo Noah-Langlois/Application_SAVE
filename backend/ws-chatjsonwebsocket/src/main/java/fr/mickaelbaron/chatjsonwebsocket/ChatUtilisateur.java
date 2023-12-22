@@ -3,7 +3,13 @@ package fr.mickaelbaron.chatjsonwebsocket;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Modelise l'utilisateur de l'application
+ * 
+ * @author Florine
+ * @version 1.0.0
+ * @see BE-SAVE
+ */
 public class ChatUtilisateur {
 	
 	//Attributs
@@ -44,5 +50,6 @@ public class ChatUtilisateur {
 	public void supprimerChatroom(String chatroom) {
 		chatrooms.remove(chatroom);
 	}
+	
 
 }
