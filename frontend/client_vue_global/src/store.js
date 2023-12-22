@@ -141,6 +141,7 @@ const methods = {
         if (obj.type=='message chat') {
           var typeMessage = ''
           if (obj.userId != user) {
+            // The current message comes from another user
             typeMessage = "message-bubble right"
           }
           else {
