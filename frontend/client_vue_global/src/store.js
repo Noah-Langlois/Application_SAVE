@@ -1,21 +1,36 @@
 import { reactive, readonly } from 'vue'
 import router from './router/index.js';
 import fb_sound from '../sounds/Facebook-message-sound.mp3'
+
+// Variable de stockage du serveur websocket
 var ws;
+
+// Audio message
 var audio = new Audio(fb_sound)
+
 const system = reactive({
   debug: false
 })
 
+// Propriétés réactives accessibles depuis les pages
 const state = reactive({
+  // Liste des discussions accessibles par l'utilisateur
   discussions: [],
+  // Discussion selectionnée
   current_chatroom: '',
+  // Stockage de la description d'une nouvelle alerte
   DescriptionNewAlerte: '',
+  // Statu de connection au serveur websocket
   isWSConnected: false,
+  // Détecter si l'utilsateur n'a aucune discussions
   isDiscussionNotEmpty: false,
+  // Type d'utilisateur (admin ou demandeur)
   userType: '',
+  // Détecter si l'utilsateur n'a pas selectioné de discussions
   isCurrentChatroomNotNull: false,
+  // Détection d'un bon mot de passe ou non
   rightPassword: true,
+  // Détection si première connexion de l'utilisateur ou non
   firstConnection : true,
 })
 
@@ -39,18 +54,24 @@ function setDiscussionEmpty(pValue) {
   state.isDiscussionNotEmpty = pValue
 }
 
-
+// Méthodes publiques
 const methods = {
+
+  // Newalerte() : Envoie la description de l'alerte comme premier message. Réinitialise la description à vide.
   NewAlerte() {
     var message = {content : state.DescriptionNewAlerte, created : new Date(), browser : navigator.product}
     ws.send(JSON.stringify(message));
     methods.setDescriptionNewAlerte('')
   },
 
+  // setUserType(String : type d'utilisateur) : Modifier le type d'utilisateur (demandeur ou admin)
   setUserType(pValue) {
     state.userType = pValue
   },
 
+  // writeMessage(String : contenu du message, String : affichage du message à gauche ou à droite) : 
+  // Affiche le message dans la balise avec l'id wsMessages
+  // Joue le son à chaque message
   writeMessage(pValue, pType) {
     var newElement = document.createElement("div");
     newElement.textContent = pValue;
@@ -61,6 +82,7 @@ const methods = {
     audio.play()
   },
 
+  // clearMessages() : Supprime les messages affichés dans le div avec l'id wsMessages
   clearMessages() {
     var wsMessages = document.getElementById("wsMessages");
     while (wsMessages.firstChild) {
@@ -68,6 +90,9 @@ const methods = {
     }
   },
 
+  // firstConnect(String : pseudo de l'utilisateur) : Première connexion lors du démarage de l'application
+  // Permet de savoir si l'utilsateur est connu ou non
+  // Se connecte au serveur qui lui renvoie un message contenant l'information, deconnexion NON-automatique
   firstConnect(user) {
     const wsURIFirstConnection = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user
     ws = new WebSocket(wsURIFirstConnection);
@@ -87,9 +112,12 @@ const methods = {
     };
   },
 
+  // getChatrooms(String : pseudo, String : password, String : Nom de la page à afficher si bon pseudo)
+  // Si le mot de passe est bon : le serveur envoie les discussions accessible par l'utilisateur, on peut alors rediriger
+  // l'utilisateur vers la page 'value'
+  // Si le mot de passe est mauvais : le serveur n'envoie pas de messages et déconnecte l'utilisateur
   getChatrooms(user, password, value) {
-    var host = document.location.host;
-    var pathname = document.location.pathname;
+
     const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
@@ -117,13 +145,17 @@ const methods = {
         console.log(evt);
     };
     ws.onclose = function (evt) {
+      console.log(evt);
       setWSConnected(false);
     }
   },
 
+  // connect(String : pseudo)
+  // Connection à la discussion selectionné (state.current_chatroom)
+  // Dans le cas d'une nouvelle alerte, la description de l'alerte est non nulle, on envoie donc la description avec
+  // NewAlerte()
   connect(user) {
-    var host = document.location.host;
-    var pathname = document.location.pathname;
+
     const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.password + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
@@ -163,28 +195,37 @@ const methods = {
         console.log(evt);
     };
     ws.onclose = function (evt) {
+      console.log(evt);
       setWSConnected(false);
     }
   },
 
+  // send()
+  // Créer un JSON pour envoyer le message avec comme contenu ce qui est écrit dans 'wsMessage'
   send() {
     var message = {content : document.getElementById("wsMessage").value, created : new Date(), browser : navigator.product}
     ws.send(JSON.stringify(message));
   },
 
+  // setChatroom(String : nom de la discussion)
+  // Modification de la discussion selectionnéé
   setChatroom(pValue) {
     state.current_chatroom = pValue;
     setCurrentChatroomNotNull(true)
   },
 
+  // setDescriptionNewAlerte(String : description de l'alerte)
   setDescriptionNewAlerte(pValue) {
     state.DescriptionNewAlerte = pValue;
   },
 
+  // discConnect() : Fermuture de la conenxion au serveur websocket
   disConnect() {
     ws.close();
   },
 
+  // addDiscussion(String : Nom de la discussion)
+  // Rajoute la discussion à la liste des discussion de l'utilisateur
   addDiscussion(pValue) {
     state.discussions.push(pValue)
     setDiscussionEmpty(true)
