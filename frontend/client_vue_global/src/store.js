@@ -9,6 +9,7 @@ const system = reactive({
 
 const state = reactive({
   discussions: [],
+  discussionsWithNotif: [],
   current_chatroom: '',
   DescriptionNewAlerte: '',
   isWSConnected: false,
@@ -17,6 +18,7 @@ const state = reactive({
   isCurrentChatroomNotNull: false,
   rightPassword: true,
   firstConnection : true,
+  password : '' // Should be removed later
 })
 
 function setFirstConnection(pValue) {
@@ -91,6 +93,7 @@ const methods = {
     var host = document.location.host;
     var pathname = document.location.pathname;
     const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
+    state.password = password;
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
         console.log(evt);
@@ -135,29 +138,33 @@ const methods = {
         }
     };
     ws.onmessage = function (evt) {
-        console.log(evt);
-        const obj = JSON.parse(evt.data)
-        if (obj.type=='message chat') {
-          var typeMessage = ''
-          if (obj.userId == user) {
-            // The message comes from the current user
-            typeMessage = "message-bubble left"
-          }
-          else {
-            typeMessage = "message-bubble right"
-          }
-          methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
+      console.log(evt);
+      const obj = JSON.parse(evt.data)
+      if (obj.type=='message chat') {
+        var typeMessage = ''
+        if (obj.userId == user) {
+          // The message comes from the current user
+          typeMessage = "message-bubble left"
         }
-        if (obj.type=='Liste chatrooms') {
-          for (let i = 1 ; i < obj.chatrooms.length ; i++) {
-            state.discussions[i-1]=(obj.chatrooms[i])
-            setDiscussionEmpty(true)
-          }
+        else {
+          typeMessage = "message-bubble right"
         }
-        if (obj.type=='Notification') {
+        methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
+      }
+      if (obj.type=='Liste chatrooms') {
+        for (let i = 1 ; i < obj.chatrooms.length ; i++) {
+          state.discussions[i-1]=(obj.chatrooms[i])
+          setDiscussionEmpty(true)
+        }
+      }
+      if (obj.type=='Notification') {
+        if (!state.discussionsWithNotif.some(item => item.chatroomId === obj.chatroomId)) {
           // TODO : add notifications on concerned chatrooms
           methods.writeMessage("Info : new message in chatroom " + obj.chatroomId, "info-text");
+          state.discussionsWithNotif.push(chatroomId);
+          methods.refreshChatrooms(user);
         }
+      }
     };
     ws.onerror = function (evt) {
         console.log(evt);
@@ -168,13 +175,13 @@ const methods = {
   },
 
   send() {
-    var message = {content : document.getElementById("wsMessage").value, created : new Date(), browser : navigator.product}
+    var message = {content : document.getElementById("wsMessage").value, created : new Date(), browser : navigator.product};
     ws.send(JSON.stringify(message));
   },
 
   setChatroom(pValue) {
     state.current_chatroom = pValue;
-    setCurrentChatroomNotNull(true)
+    setCurrentChatroomNotNull(true);
   },
 
   setDescriptionNewAlerte(pValue) {
@@ -193,6 +200,17 @@ const methods = {
   clearMessageEntry() {
     var wsMessage = document.getElementById("wsMessage");
     wsMessage.value = "";
+  },
+
+  refreshChatrooms(user) {
+    methods.disConnect();
+    methods.getChatrooms(user, state.password, router.name);
+    methods.setChatroom(state.current_chatroom);
+    methods.connect(user);
+  },
+
+  removeFromNotif(pValue) {
+    state.discussionsWithNotif.splice(state.discussionsWithNotif.indexOf(pValue), 1);
   }
 }
 
