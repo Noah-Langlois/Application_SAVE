@@ -67,16 +67,29 @@ store.methods.firstConnect(route.params.id)
         <!--Version Mobile-->
 
         <div id="mobileLogin" v-else>
-            <div class="row">
-                <h1>Mobile</h1>
-            </div>
             <div class="row" v-if="!store.state.firstConnection">
-                <div class="col-2 m-4">
-                    <h1 class="mb-4 mt-4">Connexion</h1>
-                    <label>Code PIN</label>
-                    <input type="text" class="form-control" id="login_password"/>
-                    <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
-                    <div class="mt-4">
+                <div class="row justify-content-center">
+                    <div class="col container text-center">
+                        <h1 class="mb-4 mt-4">Connexion</h1>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col container text-center">
+                        <label>Code PIN</label>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col d-flex justify-content-center">
+                        <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col container text-center">
+                        <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-2">
+                    <div class="col container text-center">
                         <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
                     </div>
                 </div>
@@ -94,7 +107,7 @@ store.methods.firstConnect(route.params.id)
                         </div>
                     </div>
                     <div class="row justify-content-center mb-5">
-                        <div class="col container text-center">
+                        <div class="col d-flex justify-content-center container text-center">
                             <div class="card" style="max-width: 40rem;">                   
                                 <div class="card-body">
                                     <ul>
