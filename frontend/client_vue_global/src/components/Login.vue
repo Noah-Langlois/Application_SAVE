@@ -6,6 +6,8 @@ const router = useRouter()
 const route = useRoute()
 const store = inject('STORE')
 store.methods.setUserType('demandeur')
+
+store.methods.setIsMobile()
 window.onresize = store.methods.setIsMobile
 
 
