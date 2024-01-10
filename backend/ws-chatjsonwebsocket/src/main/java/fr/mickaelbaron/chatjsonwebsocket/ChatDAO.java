@@ -1,5 +1,6 @@
 package fr.mickaelbaron.chatjsonwebsocket;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,12 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see BE-SAVE
  */
 public class ChatDAO {
+	
+/////////////////////////////////DATA//////////////////////////////////////////////////////////
 
     // Simule une base de données en utilisant une structure de données en mémoire
     private static ConcurrentHashMap<String, List<ChatMessage>> chatMessagesByChatroom = new ConcurrentHashMap<>();
     private static Map<String, String> hashedPasswordsByUser = new HashMap<>();
     
-    //Liste des utilisateur existant
+    //Liste des utilisateur/demandeur/admin existant
   	private static List<ChatUtilisateur> existingUsers = Collections.synchronizedList(new ArrayList<>());
   	private static List<ChatUtilisateur> existingAdmin = Collections.synchronizedList(new ArrayList<>()); 
   	private static List<ChatUtilisateur> existingDemandeur = Collections.synchronizedList(new ArrayList<>()); 
@@ -30,13 +33,21 @@ public class ChatDAO {
   	
   	//Liste des chatroom existante
   	private static List<String> existingChatroom = Collections.synchronizedList(new ArrayList<>());
+  	
+  	//Map dernière connection utilisateur : Clé: username, valeur: date + heure connection
+  	private static ConcurrentHashMap<String, Date> lastLoginTime = new ConcurrentHashMap<>();
 
+  	
+  	
+  	
+//////////////////////////////////GETERS & SETERS//////////////////////////////////////////////////////////
+  	
     public void saveChatMessage(String chatroom, ChatMessage message) {
         // Sauvegarder le message dans la "base de données"
         chatMessagesByChatroom.computeIfAbsent(chatroom, k -> new ArrayList<>()).add(message);
     }
 
-    public List<ChatMessage> getChatHistory(String chatroom) {
+    public static List<ChatMessage> getChatHistory(String chatroom) {
         // Récupérer l'historique des messages pour une chatroom donnée
         return chatMessagesByChatroom.getOrDefault(chatroom, new ArrayList<>());
     }
@@ -73,6 +84,18 @@ public class ChatDAO {
     public static void addDemandeurParChatroom(String chatroom, String username) {
     	demandeursParChatRoom.put(chatroom, username);
     }
+    
+    public static void updateLastLoginTime(String username) {
+    	//Enregistrement d'une date de nouvelle connection
+    	lastLoginTime.put(username,  new Date());
+    }
+    
+    public static ConcurrentHashMap<String, Date> getLastLoginTime() {
+    	return lastLoginTime;
+    }
+
+    
+///////////////////////////////////SUPER ADMIN //////////////////////////////////////////////////////////
     
     static {
         ChatUtilisateur superAdmin = new ChatUtilisateur();

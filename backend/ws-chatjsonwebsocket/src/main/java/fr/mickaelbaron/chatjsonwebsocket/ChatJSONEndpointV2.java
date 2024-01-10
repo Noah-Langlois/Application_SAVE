@@ -2,6 +2,7 @@ package fr.mickaelbaron.chatjsonwebsocket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +120,7 @@ public class ChatJSONEndpointV2 {
                     	allUsers.put(session.getId(), userName);
                         allSessions.put(userName, session);
                         System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
-//                        this.broadcastStringMessage(userName + " connected!", session, chatRoom);
+//                      this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                         //Recupération des messsages:
                         List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
                         broadcastHistory(chatMessages, session);
@@ -173,6 +174,7 @@ public class ChatJSONEndpointV2 {
         message.setUserId(username);
         message.setChatroomId(chat);
         message.setSessionId(session.getId());
+        message.setCreated(new Date());
         message.setType("message chat");
         
         this.broadcastObjectMessage(message, allUsers.get(session.getId()), null,
@@ -184,9 +186,6 @@ public class ChatJSONEndpointV2 {
         infoMessage.setType("Notification");
         infoMessage.setChatroomId(chat);
         this.broadcastNotification(infoMessage, session, infoMessage.getChatroomId());
-        
-        
-
     }
 
     @OnClose
