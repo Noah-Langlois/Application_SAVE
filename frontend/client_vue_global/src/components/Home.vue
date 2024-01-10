@@ -36,18 +36,19 @@ function changeRoute(value) {
                 <div class="col-2 ms-5 mt-5">
                   <div class="mt-4">
                   </div>
-                    <h2 v-if="store.state.isDiscussionNotEmpty">Discussions</h2>
-                    <div id="select_chatroom" class="list-group" role="tablist">
-                      <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action"
-                      data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
-                    </div>
-                    <div class="mt-4 ms-4">
-                      <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+                  <h2 v-if="store.state.isDiscussionNotEmpty">Discussions</h2>
+                  <div id="select_chatroom" class="list-group" role="tablist">
+                    <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action"
+                    data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
+                  </div>
+                  <div class="mt-4 ms-4">
+                    <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
                     </div>
                     <div style="text-align: center;">
-                        <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
+                      <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
                     </div>
-                </div>
+                    <button class="btn btn-danger mt-5" v-if="$route.params.id=='SuperAdmin'" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>
+                  </div>
                 <div class="col ms-5 mt-4" v-show="store.state.isCurrentChatroomNotNull">
                   <Chat/>
                 </div>
