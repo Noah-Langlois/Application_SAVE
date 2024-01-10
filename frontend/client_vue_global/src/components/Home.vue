@@ -47,7 +47,7 @@ function changeRoute(value) {
                     <div style="text-align: center;">
                       <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
                     </div>
-                    <button class="btn btn-danger mt-5" v-if="$route.params.id=='SuperAdmin'" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>
+                    <button class="btn btn-danger mt-5" v-if="($route.params.id=='SuperAdmin') && (store.state.userType=='admin')" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>
                   </div>
                 <div class="col ms-5 mt-4" v-show="store.state.isCurrentChatroomNotNull">
                   <Chat/>
