@@ -32,6 +32,8 @@ const state = reactive({
   rightPassword: true,
   // Détection si première connexion de l'utilisateur ou non
   firstConnection : true,
+  // Détection d'un appareil mobile ou non
+  isMobile : false,
 })
 
 function setFirstConnection(pValue) {
@@ -234,7 +236,16 @@ const methods = {
   clearMessageEntry() {
     var wsMessage = document.getElementById("wsMessage");
     wsMessage.value = "";
-  }
+  },
+
+  setIsMobile() {
+    if(window.innerWidth <= 1130) {
+      state.isMobile = true;
+    }
+    else {
+      state.isMobile = false;
+    }
+  },
 }
 
 export default {
