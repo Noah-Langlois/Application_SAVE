@@ -36,7 +36,7 @@ function sendAndClear() {
     <main
     class='flex min-h-screen flex-col items-center justify-between p-24'
     >
-        <div class="container-fluid mt-5">
+        <div class="container-fluid">
             <div class="row">
                 <div>
                     <h2>{{ store.state.current_chatroom }}</h2>
