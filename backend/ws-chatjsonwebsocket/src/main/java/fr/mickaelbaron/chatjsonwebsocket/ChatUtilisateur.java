@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Modelise l'utilisateur de l'application
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */

@@ -23,12 +23,12 @@ import jakarta.websocket.server.ServerEndpoint;
 /**
  * Connecte l'utilisateur a la chatroom demandee et gere l'envoi de messages
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */
 
-@ServerEndpoint(value = "/chat/{role}/{username}/{password}/{chatroom}",
+@ServerEndpoint(value = "/chat/{role}/{username}/{token}/{chatroom}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
@@ -42,10 +42,7 @@ public class ChatJSONEndpointV2 {
 
 	// Liste des chatrooms en cours
 	private static Map<String, String> allChatRooms = new HashMap<>();
-	
 
-	
-	
 	//Stocker les infos des utilisateurs pour constrcution du type Chatmessage
 	private static Map<String, String> userRoles = new ConcurrentHashMap<>();
 	private static Map<String, String> userNames = new ConcurrentHashMap<>();
@@ -54,7 +51,7 @@ public class ChatJSONEndpointV2 {
 	private static ChatDAO chatDAO = new ChatDAO();
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("chatroom") String chatRoom, @PathParam("username") String userName, @PathParam("role") String role)
+    public void onOpen(Session session, @PathParam("chatroom") String chatRoom, @PathParam("username") String userName, @PathParam("role") String role, @PathParam("token") String token)
             throws IOException {
         
     	System.out.println("ChatEndpoint.onOpen()");
@@ -68,83 +65,86 @@ public class ChatJSONEndpointV2 {
         
         //Les différents cas:
         
-//        if (utilisateurExistant != null) {
-        // L'utilisateur existe déjà
+        if (!JwtUtil.validateToken(token)) {
+            System.out.println("Token invalide");
+            session.close();
+            return;
+        }
         	
-            if ("admin".equals(utilisateurExistant.getRole())) {
-            // Si admin connexion possible a toutes les conversations
-            	
-                allUsers.put(session.getId(), userName);
+        if ("admin".equals(utilisateurExistant.getRole())) {
+        // Si admin connexion possible a toutes les conversations
+        	
+            allUsers.put(session.getId(), userName);
+            allSessions.put(userName, session);
+            System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+//          this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
+            
+            //Recupération des messsages:
+            List<ChatMessage> chatMessages = ChatDAO.getChatHistory(chatRoom);
+            broadcastHistory(chatMessages, session);
+            
+            
+            } else {
+            //Demandeur, mais verification de la chatroom
+        	
+        	if (utilisateurExistant.getChatrooms().contains(chatRoom)) {
+            // La chatroom est dans sa liste, connectez l'utilisateur à cette chatroom
+        		
+        		System.out.println("Chatroom dans la liste demandeur");
+        		allUsers.put(session.getId(), userName);
                 allSessions.put(userName, session);
                 System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
-//                this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
+//                    this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
                 
                 //Recupération des messsages:
-                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                List<ChatMessage> chatMessages = ChatDAO.getChatHistory(chatRoom);
                 broadcastHistory(chatMessages, session);
                 
                 
-                } else {
-                //Demandeur, mais verification de la chatroom
+                
+            } else if (ChatDAO.getDemandeurparChatroom().containsKey(chatRoom)) {
+             // La chatroom est utilisée par un autre utilisateur
             	
-            	if (utilisateurExistant.getChatrooms().contains(chatRoom)) {
-                // La chatroom est dans sa liste, connectez l'utilisateur à cette chatroom
-            		
-            		System.out.println("Chatroom dans la liste demandeur");
-            		allUsers.put(session.getId(), userName);
+                String existingUser = ChatDAO.getDemandeurparChatroom().get(chatRoom);
+                
+                if ("demandeur".equals(getUtilisateurParUserId(existingUser).getRole())) {
+                    // C'est un demandeur, refusez la connexion
+                	
+                	System.out.println("Chatroom deja utilisée par autre demandeur");
+                    session.close();
+                    } 
+                
+                else {
+                //C'est un admin alors connexion possible
+                	
+                	allUsers.put(session.getId(), userName);
                     allSessions.put(userName, session);
                     System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
-//                    this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
-                    
+//                      this.broadcastStringMessage(userName + " connected!", session, chatRoom);
                     //Recupération des messsages:
-                    List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
+                    List<ChatMessage> chatMessages = ChatDAO.getChatHistory(chatRoom);
                     broadcastHistory(chatMessages, session);
                     
-                    
-                    
-                } else if (ChatDAO.getDemandeurparChatroom().containsKey(chatRoom)) {
-                 // La chatroom est utilisée par un autre utilisateur
-                	
-                    String existingUser = ChatDAO.getDemandeurparChatroom().get(chatRoom);
-                    
-                    if ("demandeur".equals(getUtilisateurParUserId(existingUser).getRole())) {
-                        // C'est un demandeur, refusez la connexion
-                    	
-                    	System.out.println("Chatroom deja utilisée par autre demandeur");
-                        session.close();
-                        } 
-                    
-                    else {
-                    //C'est un admin alors connexion possible
-                    	
-                    	allUsers.put(session.getId(), userName);
-                        allSessions.put(userName, session);
-                        System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
-//                      this.broadcastStringMessage(userName + " connected!", session, chatRoom);
-                        //Recupération des messsages:
-                        List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
-                        broadcastHistory(chatMessages, session);
-                        
-                    	}
-                    
-                }else {
-                // La chatroom n'est pas dans sa liste, ajouter et connecter l'utilisateur
-                	
-                utilisateurExistant.ajouterChatroom(chatRoom);
-                ChatDAO.addDemandeurParChatroom(chatRoom, userName);
-                allUsers.put(session.getId(), userName);
-                allSessions.put(userName, session);
-                ChatDAO.getExistingChatrooms().add(chatRoom);
-                System.out.println("Utilisateur existant :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
+                	}
+                
+            }else {
+            // La chatroom n'est pas dans sa liste, ajouter et connecter l'utilisateur
+            	
+            utilisateurExistant.ajouterChatroom(chatRoom);
+            ChatDAO.addDemandeurParChatroom(chatRoom, userName);
+            allUsers.put(session.getId(), userName);
+            allSessions.put(userName, session);
+            ChatDAO.getExistingChatrooms().add(chatRoom);
+            System.out.println("Utilisateur existant :" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId() + ", " + chatRoom);
 //                    this.broadcastStringMessage(userName + " reconnected!", session, chatRoom);
+            
+            
+            //Recupération des messsages:
+            List<ChatMessage> chatMessages = ChatDAO.getChatHistory(chatRoom);
+            broadcastHistory(chatMessages, session);
                 
-                
-                //Recupération des messsages:
-                List<ChatMessage> chatMessages = chatDAO.getChatHistory(chatRoom);
-                broadcastHistory(chatMessages, session);
-                    
-                }
             }
+        }
             
 
         //Remplissage des listes info utilisateur pour l'afficher lors de l'envoie du Chatmessage

@@ -15,7 +15,7 @@ import jakarta.websocket.server.ServerEndpoint;
 /**
  * Gestion de l'authentification et envoie la liste des chatrooms autorisées
  * 
- * @author Florine
+ * @author teulierf
  * @version 3.0.0
  * @see BE-SAVE
  */
@@ -46,25 +46,30 @@ public class ChatJSONRoomEndpoint {
         
         //Les différents cas:
         
+        // L'utilisateur existe déjà
         if (utilisateurExistant != null) {
-        	// L'utilisateur existe déjà
-        	
+        
         	// Vérifier le mot de passe
             if (hashedPasswordFromDatabase == null || !BCrypt.checkpw(password, hashedPasswordFromDatabase)) {
-                // Mot de passe incorrect, refuser l'accès
+                
+            	// Mot de passe incorrect, refuser l'accès
             	System.out.println("Mauvais mot de passe!");
                 session.close();
                 return;
             }
             System.out.println("Bon mot de passe!");
             System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId());
-                	
+        	
+            //Generation du token
+            String token = JwtUtil.generateToken(userName, role);
+            ChatMessage tokenMessage = new ChatMessage();
+            tokenMessage.setType("Token");
+            tokenMessage.setContent(token);
+            broadcastToken(tokenMessage, session);
+                       
+            // C'est un admin qui est dans la liste
             if ((getAdminParUserId(userName)) != null) {
-            // c'est un admin qui est dans la liste
-            	
-            	//Stocker la date de connection
-            	
-            	
+            
                 //Envoie de la liste des chatrooms à la VUE
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
@@ -75,13 +80,12 @@ public class ChatJSONRoomEndpoint {
                 System.out.println("check unread messages");
                 checkForUnreadMessages(utilisateurExistant, session);
                 
+                //Stocker la date de connection
                 ChatDAO.updateLastLoginTime(userName);
                 
                                 
                 } else if ("demandeur".equals(role)){
-                	//Stocker la date de connection
-                	
-                	
+               	
                     //Envoie de la liste des chatrooms à la VUE
                 	ChatMessage infoMessage = new ChatMessage();
                     infoMessage.setType("Liste chatrooms");
@@ -93,6 +97,7 @@ public class ChatJSONRoomEndpoint {
                     System.out.println("check unread messages");
                     checkForUnreadMessages(utilisateurExistant, session);
                     
+                    //Stocker la date de connection
                     ChatDAO.updateLastLoginTime(userName);
                                         
                 } else {
@@ -103,14 +108,17 @@ public class ChatJSONRoomEndpoint {
                 }
             
          else {
-          // L'utilisateur n'existe pas, créer un nouvel utilisateur
-        	
+        	// L'utilisateur n'existe pas, créer un nouvel utilisateur
+        	 
         	if ("admin".equals(role)) {
+        	//C'est un admin, seul le super admin peut ajouter admin
         		System.out.println("Admin pas dans la liste");
                 session.close();
                 return;
         	}
         	else {
+       		
+        	//Ajout nouvel utilisateur
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole(role);
@@ -121,9 +129,17 @@ public class ChatJSONRoomEndpoint {
             System.out.println("Enregistrement du mot de passe");
             System.out.println("Nouvel utilisateur:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
             
+            //Generation du token
+            String token = JwtUtil.generateToken(userName, role);
+            ChatMessage tokenMessage = new ChatMessage();
+            tokenMessage.setType("Token");
+            tokenMessage.setContent(token);
+            broadcastToken(tokenMessage, session);
+            
+            //Stocker la date de connection
             ChatDAO.updateLastLoginTime(userName);
             
-            //Envoie de la liste des chatrooms à la vue
+            //Envoie de la liste des chbroadcastTokenatrooms à la vue
             ChatMessage infoMessage = new ChatMessage();
             infoMessage.setType("Liste chatrooms");
             infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());
@@ -138,6 +154,7 @@ public class ChatJSONRoomEndpoint {
         try {
             session.getBasicRemote().sendObject(message);
         } catch (IOException | EncodeException e) {
+        	System.out.println("Pb avec l'envoie liste chatroom");
             e.printStackTrace();
         }
     }
@@ -167,9 +184,19 @@ public class ChatJSONRoomEndpoint {
     private void broadcastUnreadNotification(ChatMessage notificationMessage, Session session) {
     	try {
             session.getBasicRemote().sendObject(notificationMessage);
-            System.out.println("Envoie de la notif unread)");
+            System.out.println("Envoie de la notif unread");
         } catch (IOException | EncodeException e) {
-        	System.out.println("pb avec unread");
+        	System.out.println("Pb avec unread");
+            e.printStackTrace();
+        }
+    }
+    
+    private void broadcastToken(ChatMessage tokenmessage, Session session) {
+    	try {
+            session.getBasicRemote().sendObject(tokenmessage);
+            System.out.println("Envoie du token");
+        } catch (IOException | EncodeException e) {
+        	System.out.println("Pb envoie token");
             e.printStackTrace();
         }
     }
@@ -190,7 +217,7 @@ public class ChatJSONRoomEndpoint {
 	    		        broadcastUnreadNotification(infoMessage, session);    				
 	    			}
 	    			else {
-	    				System.out.println("pas de message non lu");
+	    				System.out.println("Pas de message non lu");
 	    			}
 	    		}
 	    	}
@@ -207,7 +234,7 @@ public class ChatJSONRoomEndpoint {
 	    		        broadcastUnreadNotification(infoMessage, session);    				
 	    			}
 	    			else {
-	    				System.out.println("pas de message non lu");
+	    				System.out.println("Pas de message non lu");
 	    				}
 	    			}   	
     			}

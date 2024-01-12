@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Modelise les messages info/chat envoyé à l'interface
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */

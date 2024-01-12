@@ -11,7 +11,7 @@ import jakarta.websocket.server.ServerEndpoint;
 /**
  * Notifie interface si utilisateur connu ou pas avant connection
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */

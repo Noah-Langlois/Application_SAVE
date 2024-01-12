@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Modelise la base de donnee
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */
