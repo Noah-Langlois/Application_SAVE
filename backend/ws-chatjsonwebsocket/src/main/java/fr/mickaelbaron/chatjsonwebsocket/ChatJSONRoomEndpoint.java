@@ -1,6 +1,8 @@
 package fr.mickaelbaron.chatjsonwebsocket;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -60,18 +62,38 @@ public class ChatJSONRoomEndpoint {
             if ((getAdminParUserId(userName)) != null) {
             // c'est un admin qui est dans la liste
             	
-                //Envoie de la liste des chatrooms à la vue
+            	//Stocker la date de connection
+            	
+            	
+                //Envoie de la liste des chatrooms à la VUE
                 ChatMessage infoMessage = new ChatMessage();
                 infoMessage.setType("Liste chatrooms");
                 infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
                 broadcastListChatroom(infoMessage, session);
+                
+                //Envoyer les notifications pour messages non lu
+                System.out.println("check unread messages");
+                checkForUnreadMessages(utilisateurExistant, session);
+                
+                ChatDAO.updateLastLoginTime(userName);
+                
                                 
                 } else if ("demandeur".equals(role)){
-                    //Envoie de la liste des chatrooms à la vue
-                    ChatMessage infoMessage = new ChatMessage();
+                	//Stocker la date de connection
+                	
+                	
+                    //Envoie de la liste des chatrooms à la VUE
+                	ChatMessage infoMessage = new ChatMessage();
                     infoMessage.setType("Liste chatrooms");
                     infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
                     broadcastListChatroom(infoMessage, session);
+
+                    
+                    //Envoyer les notifications pour messages non lu
+                    System.out.println("check unread messages");
+                    checkForUnreadMessages(utilisateurExistant, session);
+                    
+                    ChatDAO.updateLastLoginTime(userName);
                                         
                 } else {
                 	System.out.println("Admin pas dans la liste");
@@ -98,7 +120,9 @@ public class ChatJSONRoomEndpoint {
             ChatDAO.saveHashedPassword(userName, hashedPassword);
             System.out.println("Enregistrement du mot de passe");
             System.out.println("Nouvel utilisateur:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
-                               
+            
+            ChatDAO.updateLastLoginTime(userName);
+            
             //Envoie de la liste des chatrooms à la vue
             ChatMessage infoMessage = new ChatMessage();
             infoMessage.setType("Liste chatrooms");
@@ -140,6 +164,55 @@ public class ChatJSONRoomEndpoint {
                 .orElse(null);
     }
     
-     
-
-}
+    private void broadcastUnreadNotification(ChatMessage notificationMessage, Session session) {
+    	try {
+            session.getBasicRemote().sendObject(notificationMessage);
+            System.out.println("Envoie de la notif unread)");
+        } catch (IOException | EncodeException e) {
+        	System.out.println("pb avec unread");
+            e.printStackTrace();
+        }
+    }
+    
+    public void checkForUnreadMessages(ChatUtilisateur utilisateur, Session session) {
+    	Date lastLogin = ChatDAO.getLastLoginTime().getOrDefault(utilisateur.getUserId(), new Date());
+    	System.out.println("Heure connection:" + lastLogin);
+    	if (utilisateur.getRole()=="demandeur") {
+	    	for (String chatroom : utilisateur.getChatrooms()) {
+	    		List<ChatMessage> messages = ChatDAO.getChatHistory(chatroom);
+	    		
+	    		for (ChatMessage message : messages) {
+	    			System.out.println(message.getCreated());
+	    			if (message.getCreated().after(lastLogin)) {
+	    				ChatMessage infoMessage = new ChatMessage();
+	    		        infoMessage.setType("Notification");
+	    		        infoMessage.setChatroomId(message.getChatroomId());
+	    		        broadcastUnreadNotification(infoMessage, session);    				
+	    			}
+	    			else {
+	    				System.out.println("pas de message non lu");
+	    			}
+	    		}
+	    	}
+    	} else {
+    		for (String chatroom : ChatDAO.getExistingChatrooms()) {
+	    		List<ChatMessage> messages = ChatDAO.getChatHistory(chatroom);
+	    		
+	    		for (ChatMessage message : messages) {
+	    			System.out.println(message.getCreated());
+	    			if (message.getCreated().after(lastLogin)) {
+	    				ChatMessage infoMessage = new ChatMessage();
+	    		        infoMessage.setType("Notification");
+	    		        infoMessage.setChatroomId(message.getChatroomId());
+	    		        broadcastUnreadNotification(infoMessage, session);    				
+	    			}
+	    			else {
+	    				System.out.println("pas de message non lu");
+	    				}
+	    			}   	
+    			}
+    		}
+    	
+    	}
+    }
+    		
