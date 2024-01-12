@@ -36,6 +36,8 @@ const state = reactive({
   isMobile : false,
   // Authentification simplifiée
   isPasswordOK : false,
+  // Token d'authentification, pour éviter de stocker le mot de passe en clair
+  token : '',
 })
 
 function setFirstConnection(pValue) {
@@ -123,7 +125,6 @@ const methods = {
   getChatrooms(user, password, value) {
 
     const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
-    state.password = password;
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
         console.log(evt);
@@ -138,6 +139,9 @@ const methods = {
             state.discussions[i-1]=(obj.chatrooms[i])
             setDiscussionNotEmpty(true)
           }
+        }
+        if (obj.type == 'Token'){
+          state.token = obj.content
         }
         methods.disConnect()
         router.push({
@@ -162,7 +166,7 @@ const methods = {
   // NewAlerte()
   connect(user) {
 
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.password + "/" + state.current_chatroom
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {

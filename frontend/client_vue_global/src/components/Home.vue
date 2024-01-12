@@ -22,11 +22,9 @@ function setIsChatroomSelected(pvalue) {
 function setChatroomList(pvalue, user) {
   setIsChatroomSelected(true)
   store.methods.setChatroom(pvalue)
-  store.methods.removeFromNotif(pvalue)
   if (store.state.isWSConnected) {
     store.methods.disConnect()
     store.methods.clearMessages()
-    
   }
   store.methods.connect(user)
 }
