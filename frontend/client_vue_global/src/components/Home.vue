@@ -93,7 +93,7 @@ function changeRoute(value) {
           </div>
           <div class="row justify-content-center mt-2">
             <div class="col container text-center">
-              <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+              <button class="btn btn-primary" @click="changeRoute('Form'); console.log('Current status of isWSConnected:' + state.isWSConnected);">Nouvelle Alerte</button>
             </div>
           </div>
           <div class="row justify-content-center mt-1">

@@ -10,7 +10,7 @@ store.methods.setIsMobile()
 window.onresize = store.methods.setIsMobile
 
 function changeRoute(value) {
-  console.log(store.system.debug)
+  console.log("Debug status : " + store.system.debug)
   router.push({
     name: value
   })

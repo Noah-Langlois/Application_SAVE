@@ -127,23 +127,24 @@ const methods = {
     const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
-        console.log(evt);
+      console.log(evt);
         setWSConnected(true);
         setRightPassword(false)
     };
     ws.onmessage = function (evt) {
-        console.log(evt);
+      console.log(evt);
         const obj = JSON.parse(evt.data)
+        if (obj.type == 'Token'){
+          state.token = obj.content
+          console.log("[getChatrooms] Token is: " + state.token)
+        }
         if (obj.type=='Liste chatrooms') {
           for (let i = 1 ; i < obj.chatrooms.length ; i++) {
             state.discussions[i-1]=(obj.chatrooms[i])
             setDiscussionNotEmpty(true)
           }
         }
-        if (obj.type == 'Token'){
-          state.token = obj.content
-        }
-        methods.disConnect()
+        // methods.disConnect()
         router.push({
           name: value,
           params: {id: user}
@@ -152,12 +153,18 @@ const methods = {
         setRightPassword(true)
     };
     ws.onerror = function (evt) {
-        console.log(evt);
+      console.log(evt);
     };
     ws.onclose = function (evt) {
       console.log(evt);
       setWSConnected(false);
     }
+  },
+
+  // refreshChatrommsList(String : pseudo)
+  // Rafraichissement de la liste des discussions, accessible uniquement si l'utilisateur est connecté correctement
+  refreshChatrooms(user) {
+    // TODO
   },
 
   // connect(String : pseudo)
@@ -178,6 +185,7 @@ const methods = {
     };
     ws.onmessage = function (evt) {
       console.log(evt);
+      console.log("[connect] Token is: " + state.token);
       const obj = JSON.parse(evt.data)
       if (obj.type=='message chat') {
         var typeMessage = ''
@@ -206,7 +214,7 @@ const methods = {
       }
     };
     ws.onerror = function (evt) {
-        console.log(evt);
+      console.log(evt);
     };
     ws.onclose = function (evt) {
       console.log(evt);
@@ -222,7 +230,7 @@ const methods = {
   },
 
   // setChatroom(String : nom de la discussion)
-  // Modification de la discussion selectionnéé
+  // Modification de la discussion selectionnée
   setChatroom(pValue) {
     state.current_chatroom = pValue;
     setCurrentChatroomNotNull(true);
