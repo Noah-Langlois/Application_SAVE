@@ -26,10 +26,19 @@ function createAlerte(value,user) {
   })
 }
 
+let URL = window.location.pathname
+const myArray = URL.split("/")
 if (store.state.token=='') {
+  if (myArray[1]=='demandeur') {
     router.push({
-              name: 'Login'
-          })
+            name: 'Login'
+        })
+  }
+  if (myArray[1]=='admin') {
+    router.push({
+            name: 'LoginAdmin'
+        })
+  }
 }
 
 </script>
