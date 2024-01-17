@@ -18,7 +18,7 @@ store.methods.firstConnect(route.params.id)
 <template>
     <main style="min-height: 85vh;">
         <div>
-            <div class="row" v-if="!store.state.firstConnection">
+            <div class="row ps-5 pt-5 pe-5" v-if="!store.state.firstConnection">
                 <div class="col-lg-5">
                     <h1 class="mb-4 mt-4">Connexion</h1>
                     <label>Code PIN</label>
@@ -30,7 +30,7 @@ store.methods.firstConnect(route.params.id)
                 </div>
             </div>
             <div v-else>
-                <div class="row justify-content-start">
+                <div class="row justify-content-start ps-5 pt-5 pe-5">
                     <div class="col-lg-5">
                         <div class="">
                             <div class="row justify-content-center">

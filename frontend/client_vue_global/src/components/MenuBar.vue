@@ -35,6 +35,7 @@ function changeRoute(value) {
                 class="nav-link"
                 :class="{ active: isActiveRoute('Home') }"
                 href="#"
+                v-if="isActiveRoute('Home')"
                 @click="changeRoute('Home')"
                 style=" color: rgb(0, 0, 0);"
                 >Home</a

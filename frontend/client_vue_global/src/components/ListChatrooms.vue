@@ -44,7 +44,7 @@ function changeRoute(value) {
               </div>
             </div>
           </div>
-          <div class="row justify-content-center mt-2">
+          <div class="row justify-content-center pt-5">
             <div class="col container text-center">
               <button class="btn btn-outline-dark" @click="changeRoute('Form')">Nouvelle Alerte</button>
             </div>
