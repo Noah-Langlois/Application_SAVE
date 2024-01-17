@@ -27,14 +27,17 @@ function createNewAdmin(user) {
 
 function displayAdminList(user) {
   console.log("Debug status : " + store.system.debug);
-  const adminList = store.methods.getAdminList(user);
+  var v_adminList = [];
+  store.methods.getAdminList(user, v_adminList);
   const adminListElement = document.getElementById('admin-list');
+  console.log("[displayAdminList] adminList is : " + v_adminList);
   adminListElement.innerHTML = '';
-  for (const admin of adminList) {
+  for (let i = 0; i < v_adminList.length; i++) {
     const listItem = document.createElement('li');
-    listItem.textContent = admin.userId;
+    listItem.textContent = v_adminList[i];
     adminListElement.appendChild(listItem);
   }
+  console.log("[displayAdminList] adminListElement is : " + v_adminList);
 }
 
 function createAlerte(value,user) {
@@ -126,6 +129,9 @@ function createAlerte(value,user) {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+            <button class="btn btn-primary ms-5" @click="displayAdminList($route.params.id)">Refresh</button>
         </div>
         <div>
             <button class="btn btn-primary ms-5" @click="changeRoute('HomeAdmin')">Retour</button>

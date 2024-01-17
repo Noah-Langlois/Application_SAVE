@@ -273,10 +273,11 @@ const methods = {
     }
   },
 
-  getAdminList(user) {
-    console.log("Debug status : " + system.debug)
-    var adminList = [];
-    const wsURIAdminListRequest = wsURIprefix + "/chat/requete/" + user + "/" + state.token;
+  getAdminList(user, pList) {
+    console.log("Debug status : " + system.debug);
+    const wsURIAdminListRequest = wsURIprefix + "/chat/SuperAdmin/" + state.token + "/List";
+    console.log("[getAdminList] URI is: " + wsURIAdminListRequest);
+    console.log("[getAdminList] Token is: " + state.token);
     ws = new WebSocket(wsURIAdminListRequest);
     ws.onopen = function (evt) {
       console.log(evt);
@@ -286,8 +287,9 @@ const methods = {
       console.log(evt);
       const obj = JSON.parse(evt.data)
       if (obj.type == 'Liste admins') {
-        for (let i = 1 ; i < obj.admins.length ; i++) {
-          adminList.push(obj.admins[i])
+        for (let i = 0; i < obj.adm.length; i++) {
+          console.log("[getAdminList] Admin found: " + obj.adm[i].userId);
+          pList.push(obj.adm[i].userId);
         }
       }
     };
@@ -295,7 +297,6 @@ const methods = {
       console.log(evt);
       setWSConnected(false);
     };
-    return adminList;
   }
 }
 
@@ -304,3 +305,7 @@ export default {
   system,
   methods,
 }
+
+
+// jSonAdm_i = JSON.parse(obj.adm[i]);
+//          adminList.push(jSonAdm_i.userId);
