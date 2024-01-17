@@ -12,6 +12,11 @@ const store = inject('STORE')
 store.methods.setIsMobile()
 window.onresize = store.methods.setIsMobile
 
+if (store.state.token=='') {
+    router.push({
+              name: 'Login'
+          })
+}
 
 </script>
 

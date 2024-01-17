@@ -41,6 +41,12 @@ function createAlerte(value,user) {
   })
 }
 
+if (store.state.token=='') {
+    router.push({
+              name: 'Login'
+          })
+}
+
 </script>
 
 <template>
