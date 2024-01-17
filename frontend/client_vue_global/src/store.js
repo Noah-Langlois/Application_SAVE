@@ -214,6 +214,9 @@ const methods = {
   setChatroom(pValue) {
     state.current_chatroom = pValue;
     setCurrentChatroomNotNull(true)
+    if (pValue=='') {
+      setCurrentChatroomNotNull(false)
+    }
   },
 
   // setDescriptionNewAlerte(String : description de l'alerte)
