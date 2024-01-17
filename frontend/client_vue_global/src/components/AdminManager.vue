@@ -125,7 +125,7 @@ if (store.state.token=='') {
           </div>
         </div>
         <div>
-            <button class="btn btn-primary ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
+            <button class="btn btn-outline-dark ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
         </div>
       </div>
     </main>
