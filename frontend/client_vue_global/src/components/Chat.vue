@@ -49,7 +49,7 @@ function sendAndClear() {
                     </div>
                     <div class="row">
                         <div class="col">
-                            <div class="form-group">
+                            <div class="form-group" style="background-color: white;">
                                 <div class="mytextarea" style="padding: 30px;" id="wsMessages"></div>
                             </div>
                         </div>

@@ -11,8 +11,8 @@ provide('STORE', store)
 </script>
 
 <template>
-  <div class="container-fluid">
-    <MenuBar />
+  <MenuBar />
+  <div class="container-fluid" style="background-color: rgb(250, 239, 239);">
     <!-- Add RouterView component -->
     <RouterView />
     <Footer />

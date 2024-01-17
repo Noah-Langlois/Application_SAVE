@@ -31,7 +31,7 @@ function changeRoute(value) {
 
 <template>
     <div>
-        <div class="row justify-content-center mt-5" v-if="store.state.isDiscussionNotEmpty">
+        <div class="row justify-content-center pt-5" v-if="store.state.isDiscussionNotEmpty">
             <div class="col container text-center">
               <h2>Discussions</h2>
             </div>
@@ -46,7 +46,7 @@ function changeRoute(value) {
           </div>
           <div class="row justify-content-center mt-2">
             <div class="col container text-center">
-              <button class="btn btn-primary" @click="changeRoute('Form')">Nouvelle Alerte</button>
+              <button class="btn btn-outline-dark" @click="changeRoute('Form')">Nouvelle Alerte</button>
             </div>
           </div>
           <div class="row justify-content-center mt-1">
@@ -56,7 +56,7 @@ function changeRoute(value) {
           </div>
           <div class="row justify-content-center">
             <div class="col container text-center">
-              <button class="btn btn-danger mt-5" v-if="($route.params.id=='SuperAdmin') && (store.state.userType=='admin')" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>
+              <button class="btn btn-outline-danger mt-5" v-if="($route.params.id=='SuperAdmin') && (store.state.userType=='admin')" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>
             </div>
           </div>
     </div>
