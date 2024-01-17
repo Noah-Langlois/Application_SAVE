@@ -51,8 +51,8 @@ function createAlerte(value,user) {
                     </div>
             </div>
             <div id="Buttons" class="m-4">
-                <button class="btn btn-primary me-5" @click="createAlerte('Home',$route.params.id)">Envoyer</button>
-                    <button class="btn btn-primary" @click="changeRoute('Home')">Menu</button>
+                <button class="btn btn-outline-dark me-5" @click="createAlerte('Home',$route.params.id)">Envoyer</button>
+                    <button class="btn btn-outline-dark" @click="changeRoute('Home')">Menu</button>
             </div> 
 
     </main>

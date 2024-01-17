@@ -44,12 +44,12 @@ function changeRoute(value) {
               </div>
             </div>
           </div>
-          <div class="row justify-content-center pt-5">
+          <div class="row justify-content-center pt-5" v-if="store.state.userType=='demandeur'">
             <div class="col container text-center">
               <button class="btn btn-outline-dark" @click="changeRoute('Form')">Nouvelle Alerte</button>
             </div>
           </div>
-          <div class="row justify-content-center mt-1">
+          <div class="row justify-content-center mt-1" v-if="store.state.isDiscussionNotEmpty">
             <div class="col container text-center">
               <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
             </div>

@@ -25,7 +25,7 @@ store.methods.firstConnect(route.params.id)
                     <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                     <div class="mt-4">
-                        <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                        <button class="btn btn-outline-dark" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@ store.methods.firstConnect(route.params.id)
                             <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
                             <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                             <div class="mt-4">
-                                <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                                <button class="btn btn-outline-dark" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
                             </div>
                         </div>
                     </div>
