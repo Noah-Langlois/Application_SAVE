@@ -233,7 +233,10 @@ const methods = {
   // Modification de la discussion selectionnée
   setChatroom(pValue) {
     state.current_chatroom = pValue;
-    setCurrentChatroomNotNull(true);
+    setCurrentChatroomNotNull(true)
+    if (pValue=='') {
+      setCurrentChatroomNotNull(false)
+    }
   },
 
   // setDescriptionNewAlerte(String : description de l'alerte)
