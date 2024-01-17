@@ -56,6 +56,9 @@ public class ChatDAO {
         // Sauvegarder le mot de passe haché dans la "base de données"
         hashedPasswordsByUser.put(username, hashedPassword);
     }
+    public static void deleteHashedPassword(String username) {
+    	hashedPasswordsByUser.remove(username);
+    }
 
     public static String getHashedPasswordByUsername(String username) {
         // Récupérer le mot de passe haché pour un utilisateur donné
@@ -113,15 +116,44 @@ public class ChatDAO {
     public static void addAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin, String newPassword) {
         // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
         if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
-            // Définir le mot de passe pour le nouvel administrateur
+            
+        	if (!existingAdmin.contains(newAdmin)) {
+        	// Définir le mot de passe pour le nouvel administrateur
             String hashedPassword = PasswordHashing.hashPassword(newPassword);
-            ChatDAO.saveHashedPassword(newAdmin.getUserId(), hashedPassword);
+            saveHashedPassword(newAdmin.getUserId(), hashedPassword);
 
             // Ajouter le nouvel administrateur à la liste
             existingAdmin.add(newAdmin);
+            
+        	} else {
+                throw new IllegalStateException("Admin deja dans la liste");
+        	}
+        	
         } else {
             // L'utilisateur n'a pas les droits pour ajouter un administrateur
             throw new IllegalStateException("Seul le SuperAdmin peut ajouter des administrateurs.");
+        }
+    }
+    
+    public static void removeAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur supprAdmin) {
+        // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+        if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
+            
+        	if (existingAdmin.contains(supprAdmin)) {
+        		
+        	//Suppr mdp de la liste
+            deleteHashedPassword(supprAdmin.getUserId());
+
+            // Suprimer le nouvel administrateur à la liste
+            existingAdmin.remove(supprAdmin);
+            
+            } else {
+                throw new IllegalStateException("Admin pas dans la liste");
+
+            }
+        } else {
+            // L'utilisateur n'a pas les droits pour ajouter un administrateur
+            throw new IllegalStateException("Seul le SuperAdmin peut supprimer des administrateurs.");
         }
     }
 }

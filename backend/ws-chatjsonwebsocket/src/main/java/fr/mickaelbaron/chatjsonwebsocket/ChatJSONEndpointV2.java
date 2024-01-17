@@ -1,17 +1,11 @@
 package fr.mickaelbaron.chatjsonwebsocket;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import jakarta.websocket.EncodeException;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
@@ -154,11 +148,6 @@ public class ChatJSONEndpointV2 {
         
     }
     
-    @OnMessage
-    public void onMessage(Session session, byte[] message) {
-        System.out.println("ChatEndpoint.onMessageForByteArray()");
-        this.broadcastBinaryMessage(ByteBuffer.wrap(message), null, allChatRooms.get(session.getId()));
-    }
     
     @OnMessage
     public void onMessage(Session session, ChatMessage message) {
@@ -203,8 +192,9 @@ public class ChatJSONEndpointV2 {
         newChatMessage.setContent(currentUsername);
         this.broadcastStringMessage(currentUsername + " disconnected!", session, allChatRooms.get(session.getId()));
     }
+    
 
-    //Definition des Broadcast en fonction des types de messages à envoyer
+    //Envoyer un ChatMessage
     private void broadcastObjectMessage(ChatMessage message, String user, Session exclude, String currentChatRoom) {
         allSessions.forEach((username, session) -> {
         //Parcourir toute les sessions de allsessions
@@ -227,7 +217,9 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-
+    
+    
+    //Envoyer un Messsage String simple
     private void broadcastStringMessage(String message, Session exclude, String currentChatRoom) {
         allSessions.forEach((username, session) -> {
             try {
@@ -241,25 +233,7 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
-    private void broadcastBinaryMessage(ByteBuffer message, Session exclude, String currentChatRoom) {
-        allSessions.forEach((username, session) -> {
-            try {
-                if (!(exclude != null && session.getId().equals(exclude.getId()))) {
-                    if (allChatRooms.get(session.getId()).equals(currentChatRoom)) {
-                        Future<Void> sendBinary = session.getAsyncRemote().sendBinary(message);
-                        sendBinary.get(1, TimeUnit.MILLISECONDS);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                System.out.println("Too long!");
-                e.printStackTrace();
-            }
-        });
-    }
+    
     
     //Afficher l'historique des messages
     private void broadcastHistory(List<ChatMessage> messages, Session session) {
@@ -272,6 +246,8 @@ public class ChatJSONEndpointV2 {
         });
     }
     
+   
+    //Envoyer des notifications
     private void broadcastNotification(ChatMessage notificationMessage, Session senderSession, String chatroom) {
         allSessions.forEach((username, session) -> {
             if (userRoles.get(session.getId()).equals("admin") && !session.equals(senderSession)) {
@@ -295,6 +271,7 @@ public class ChatJSONEndpointV2 {
             }
         });
     }
+    
         
     /*Verifier si l'userId fait parti des userId deja existant
 	Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant*/    

@@ -16,38 +16,30 @@ import jakarta.websocket.server.ServerEndpoint;
  * Gestion de l'authentification et envoie la liste des chatrooms autorisées
  * 
  * @author teulierf
- * @version 3.0.0
+ * @version 3.1.0
  * @see BE-SAVE
  */
 
-@ServerEndpoint(value = "/chat/{role}/{username}/{password}",
+@ServerEndpoint(value = "/chat/demandeur/{username}/{password}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
-public class ChatJSONRoomEndpoint {
-	
-		
-		
+public class ChatJSONDemandeurEndpoint {
+			
 	@OnOpen
-    public void onOpen(Session session, @PathParam("username") String userName, @PathParam("role") String role, @PathParam("password") String password) throws IOException {
-        System.out.println("ChatEndpoint.onOpen()");
+    public void onOpen(Session session, @PathParam("username") String userName, @PathParam("password") String password) throws IOException {
+        System.out.println("ChatDemandeurEndpoint.onOpen()");
 
         String hashedPasswordFromDatabase = ChatDAO.getHashedPasswordByUsername(userName);
 
         //Renvoie l'utilisateur s'il existe ou NULL sinon, grace au username
-        ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
-        
-        if ("SuperAdmin".equals(userName) && "admin".equals(role)) {
-        	ChatUtilisateur newAdmin = new ChatUtilisateur();
-            newAdmin.setUserId("NewAdmin");
-            newAdmin.setRole("admin");
-            ChatDAO.addAdminWithPassword(utilisateurExistant, newAdmin, "NouveauMotDePasse123");
-        }
+        ChatUtilisateur demandeurExistant = getDemandeurParUserId(userName);
+
         
         //Les différents cas:
         
         // L'utilisateur existe déjà
-        if (utilisateurExistant != null) {
+        if (demandeurExistant != null) {
         
         	// Vérifier le mot de passe
             if (hashedPasswordFromDatabase == null || !BCrypt.checkpw(password, hashedPasswordFromDatabase)) {
@@ -57,71 +49,41 @@ public class ChatJSONRoomEndpoint {
                 session.close();
                 return;
             }
+            
             System.out.println("Bon mot de passe!");
-            System.out.println("Utilisateur existant:" + utilisateurExistant.getRole() + ", " + utilisateurExistant.getUserId());
+            System.out.println("Utilisateur existant:" + demandeurExistant.getRole() + ", " + demandeurExistant.getUserId());
         	
             //Generation du token
-            String token = JwtUtil.generateToken(userName, role);
+            String token = JwtUtil.generateToken(userName, "demandeur");
             ChatMessage tokenMessage = new ChatMessage();
             tokenMessage.setType("Token");
             tokenMessage.setContent(token);
             broadcastToken(tokenMessage, session);
-                       
-            // C'est un admin qui est dans la liste
-            if ((getAdminParUserId(userName)) != null) {
-            
-                //Envoie de la liste des chatrooms à la VUE
-                ChatMessage infoMessage = new ChatMessage();
-                infoMessage.setType("Liste chatrooms");
-                infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
-                broadcastListChatroom(infoMessage, session);
-                
-                //Envoyer les notifications pour messages non lu
-                System.out.println("check unread messages");
-                checkForUnreadMessages(utilisateurExistant, session);
-                
-                //Stocker la date de connection
-                ChatDAO.updateLastLoginTime(userName);
-                
-                                
-                } else if ("demandeur".equals(role)){
-               	
-                    //Envoie de la liste des chatrooms à la VUE
-                	ChatMessage infoMessage = new ChatMessage();
-                    infoMessage.setType("Liste chatrooms");
-                    infoMessage.setChatrooms(utilisateurExistant.getChatrooms());
-                    broadcastListChatroom(infoMessage, session);
 
-                    
-                    //Envoyer les notifications pour messages non lu
-                    System.out.println("check unread messages");
-                    checkForUnreadMessages(utilisateurExistant, session);
-                    
-                    //Stocker la date de connection
-                    ChatDAO.updateLastLoginTime(userName);
-                                        
-                } else {
-                	System.out.println("Admin pas dans la liste");
-                    session.close();
-                    return;
-                	} 
-                }
+               	
+            //Envoie de la liste des chatrooms à la VUE
+        	ChatMessage infoMessage = new ChatMessage();
+            infoMessage.setType("Liste chatrooms");
+            infoMessage.setChatrooms(demandeurExistant.getChatrooms());
+            broadcastListChatroom(infoMessage, session);
+
             
+            //Envoyer les notifications pour messages non lu
+            System.out.println("check unread messages");
+            checkForUnreadMessages(demandeurExistant, session);
+            
+            //Stocker la date de connection
+            ChatDAO.updateLastLoginTime(userName);
+                                        
+        }   
          else {
         	// L'utilisateur n'existe pas, créer un nouvel utilisateur
-        	 
-        	if ("admin".equals(role)) {
-        	//C'est un admin, seul le super admin peut ajouter admin
-        		System.out.println("Admin pas dans la liste");
-                session.close();
-                return;
-        	}
-        	else {
+
        		
         	//Ajout nouvel utilisateur
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
-            nouvelUtilisateur.setRole(role);
+            nouvelUtilisateur.setRole("demandeur");
             ChatDAO.getExistingUsers().add(nouvelUtilisateur);
             
             String hashedPassword = PasswordHashing.hashPassword(password);
@@ -130,7 +92,7 @@ public class ChatJSONRoomEndpoint {
             System.out.println("Nouvel utilisateur:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
             
             //Generation du token
-            String token = JwtUtil.generateToken(userName, role);
+            String token = JwtUtil.generateToken(userName, "demandeur");
             ChatMessage tokenMessage = new ChatMessage();
             tokenMessage.setType("Token");
             tokenMessage.setContent(token);
@@ -145,7 +107,6 @@ public class ChatJSONRoomEndpoint {
             infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());
             broadcastListChatroom(infoMessage, session);
         	}
-          }
           
     }
 	
@@ -159,23 +120,13 @@ public class ChatJSONRoomEndpoint {
         }
     }
     
-	 /*Verifier si l'userId fait parti des userId deja existant
-    renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant*/
-    private ChatUtilisateur getUtilisateurParUserId(String userId) {
-
-    	
-        return ChatDAO.getExistingUsers().stream()
-                .filter(utilisateur -> utilisateur.getUserId().equals(userId))
-                .findFirst()
-                .orElse(null);
-    }
     
-    /*Verifier si l'userId fait parti des admins deja existant
+    /*Verifier si l'userId fait parti des demandeur deja existant
     Renvoie Null si n'existe pas sinon renvoie le Chatutilisateur correspondant*/
-    private ChatUtilisateur getAdminParUserId(String userId) {
+    private ChatUtilisateur getDemandeurParUserId(String userId) {
 
     	
-        return ChatDAO.getAdmin().stream()
+        return ChatDAO.getDemandeur().stream()
                 .filter(utilisateur -> utilisateur.getUserId().equals(userId))
                 .findFirst()
                 .orElse(null);
@@ -243,3 +194,4 @@ public class ChatJSONRoomEndpoint {
     	}
     }
     		
+
