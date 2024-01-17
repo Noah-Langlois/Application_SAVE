@@ -16,21 +16,21 @@ store.methods.firstConnect(route.params.id)
 
 </script>
 <template>
-    <main>
+    <main style="min-height: 85vh;">
         <div>
-            <div class="row" v-if="!store.state.firstConnection">
+            <div class="row ps-5 pt-5 pe-5" v-if="!store.state.firstConnection">
                 <div class="col-lg-5">
                     <h1 class="mb-4 mt-4">Connexion</h1>
                     <label>Code PIN</label>
                     <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                     <div class="mt-4">
-                        <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                        <button class="btn btn-outline-dark" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
                     </div>
                 </div>
             </div>
             <div v-else>
-                <div class="row justify-content-start">
+                <div class="row justify-content-start ps-5 pt-5 pe-5">
                     <div class="col-lg-5">
                         <div class="">
                             <div class="row justify-content-center">
@@ -43,7 +43,7 @@ store.methods.firstConnect(route.params.id)
                             <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
                             <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                             <div class="mt-4">
-                                <button class="btn btn-primary" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
+                                <button class="btn btn-outline-dark" @click="checkPassword('Home',$route.params.id)">Confirmer</button>
                             </div>
                         </div>
                     </div>

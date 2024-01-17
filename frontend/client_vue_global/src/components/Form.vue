@@ -30,8 +30,8 @@ function createAlerte(value,user) {
 </script>
 
 <template>
-    <main>
-        <h1 class="m-4">Nouvelle Alerte</h1>
+    <main style="min-height: 85vh;">
+        <h1 class="p-4">Nouvelle Alerte</h1>
             <div class="m-4">
                     <div>
                         <label class="form-label">Titre de la discussion</label>
@@ -51,8 +51,8 @@ function createAlerte(value,user) {
                     </div>
             </div>
             <div id="Buttons" class="m-4">
-                <button class="btn btn-primary me-5" @click="createAlerte('Home',$route.params.id)">Envoyer</button>
-                    <button class="btn btn-primary" @click="changeRoute('Home')">Menu</button>
+                <button class="btn btn-outline-dark me-5" @click="createAlerte('Home',$route.params.id)">Envoyer</button>
+                    <button class="btn btn-outline-dark" @click="changeRoute('Home')">Menu</button>
             </div> 
 
     </main>

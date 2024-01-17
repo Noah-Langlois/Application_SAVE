@@ -15,15 +15,18 @@ window.onresize = store.methods.setIsMobile
 </script>
 
 <template>
-  <main>
+  <main style="min-height: 85vh;">
     <!--Version WEB-->
     <div v-if="!store.state.isMobile">
       <div class="mb-5">
         <div class="row">
-          <div class="col-2 ms-5 mt-5">
+          <div class="col-2 ms-5 mt-5 me-5">
             <ListChatrooms/>
           </div>
-          <div class="col ms-5 mt-4" v-show="store.state.isCurrentChatroomNotNull">
+          <div class="col-md-auto">
+            <img src="../../img/baton_long.png" class="mt-4" alt="batton" width="2" height="650" />
+          </div>
+          <div class="col mt-4 ms-4" v-show="store.state.isCurrentChatroomNotNull">
             <div class="mt-5">
               <Chat/>
             </div>
