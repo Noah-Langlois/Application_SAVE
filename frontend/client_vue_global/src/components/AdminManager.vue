@@ -13,6 +13,34 @@ function changeRoute(value) {
   })
 }
 
+function createNewAdmin() {
+  console.log("Debug status : " + store.system.debug)
+  console.log("Creation d'un nouvel admin")
+  var pseudoNewAdmin = document.getElementById("pseudoNewAdmin");
+  console.log("[Creation admin] le token actuel est :" + store.state.token);
+  const newAdminUsername = pseudoNewAdmin.value;
+  const wsURInewAdminRequest = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/SuperAdmin/" + store.state.token + "/Ajout/" + newAdminUsername + "/";
+  var ws = new WebSocket(wsURInewAdminRequest);
+  pseudoNewAdmin.value = "";
+  refreshAdminList();
+}
+
+function refreshAdminList() {
+}
+
+function createAlerte(value,user) {
+    store.methods.setChatroom(document.getElementById("discussion_title").value)
+    document.getElementById("discussion_title").value = ""
+    store.methods.setDescriptionNewAlerte(document.getElementById("description").value)
+    document.getElementById("description").value = ""
+    store.methods.addDiscussion(store.state.current_chatroom)
+    store.methods.connect(user)
+    console.log(store.system.debug)
+    router.push({
+        name: value
+  })
+}
+
 </script>
 
 <template>
@@ -51,11 +79,11 @@ function changeRoute(value) {
                     </div>
                     <div class="modal-body">
                       <h4>Pseudo :</h4>
-                      <input class="form-control"/>
+                      <input class="form-control" id="pseudoNewAdmin"/>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                      <button type="button" class="btn btn-primary">Valider</button>
+                      <button type="button" @click="createNewAdmin()" class="btn btn-primary">Valider</button>
                     </div>
                   </div>
                 </div>
