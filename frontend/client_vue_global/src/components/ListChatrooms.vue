@@ -18,7 +18,6 @@ function setChatroomList(pvalue, user) {
 function changeRoute(value) {
   if (store.state.isWSConnected) {
     store.methods.disConnect()
-    store.methods.clearMessages()
   }
   console.log(store.system.debug)
   router.push({

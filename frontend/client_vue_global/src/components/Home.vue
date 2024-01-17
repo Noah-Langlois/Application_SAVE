@@ -4,6 +4,7 @@ import { inject } from 'vue'
 import { ref } from 'vue'
 import Chat from "./Chat.vue"
 import ListChatrooms from './ListChatrooms.vue'
+import AboutUs from './AboutUs.vue'
 
 const router = useRouter()
 
@@ -26,9 +27,14 @@ window.onresize = store.methods.setIsMobile
           <div class="col-md-auto">
             <img src="../../img/baton_long.png" class="mt-4" alt="batton" width="2" height="650" />
           </div>
-          <div class="col mt-4 ms-4" v-show="store.state.isCurrentChatroomNotNull">
+          <div class="col mt-4 ms-4" v-if="store.state.isCurrentChatroomNotNull">
             <div class="mt-5">
               <Chat/>
+            </div>
+          </div>
+          <div class="col mt-4 ms-4" v-else>
+            <div v-if="!store.state.isDiscussionNotEmpty">
+              <AboutUs/>
             </div>
           </div>
         </div>
@@ -41,6 +47,9 @@ window.onresize = store.methods.setIsMobile
       <div class="mb-5">
         <div v-show="!store.state.isCurrentChatroomNotNull">
           <ListChatrooms/>
+          <div v-if="!store.state.isDiscussionNotEmpty">
+            <AboutUs/>
+          </div>
         </div>
         <button class="btn btn-secondary mt-5" @click="store.methods.setChatroom('')" v-if="store.state.isCurrentChatroomNotNull">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
