@@ -18,20 +18,20 @@ function checkPassword(value) {
 <template>
     <main style="min-height: 85vh;">
         <div>
-            <div>
-                <div class="p-4">
+            <div class="ps-5 pt-5 pe-5">
+                <div class="">
                     <h1>Login</h1>
                 </div>
-                <div class="m-4">
+                <div class="mt-4">
                     <label>Pseudo</label>
                     <input type="text" class="form-control" id="login_pseudo" style="max-width: 18rem;"/>
                 </div>
-                <div class="m-4">
+                <div class="mt-4">
                     <label>Mot de passe</label>
                     <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                 </div>
-                <div class="m-4">
+                <div class="mt-4">
                     <button class="btn btn-primary" @click="checkPassword('HomeAdmin')">Confirmer</button>
                 </div>
             </div>
