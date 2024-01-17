@@ -20,7 +20,7 @@ const state = reactive({
   current_chatroom: '',
   // Stockage de la description d'une nouvelle alerte
   DescriptionNewAlerte: '',
-  // Statu de connection au serveur websocket
+  // Statut de connexion au serveur websocket
   isWSConnected: false,
   // Détecter si l'utilsateur n'a aucune discussions
   isDiscussionNotEmpty: false,
@@ -34,6 +34,10 @@ const state = reactive({
   firstConnection : true,
   // Détection d'un appareil mobile ou non
   isMobile : false,
+  // Authentification simplifiée
+  isPasswordOK : false,
+  // Token d'authentification, pour éviter de stocker le mot de passe en clair
+  token : '',
 })
 
 function setFirstConnection(pValue) {
@@ -52,7 +56,7 @@ function setWSConnected(pValue) {
   state.isWSConnected = pValue
 }
 
-function setDiscussionEmpty(pValue) {
+function setDiscussionNotEmpty(pValue) {
   state.isDiscussionNotEmpty = pValue
 }
 
@@ -123,28 +127,33 @@ const methods = {
     const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
-        console.log(evt);
+      console.log(evt);
         setWSConnected(true);
         setRightPassword(false)
     };
     ws.onmessage = function (evt) {
-        console.log(evt);
+      console.log(evt);
         const obj = JSON.parse(evt.data)
+        if (obj.type == 'Token'){
+          state.token = obj.content
+          console.log("[getChatrooms] Token is: " + state.token)
+        }
         if (obj.type=='Liste chatrooms') {
-          for (let i = obj.chatrooms.length-1 ; i >= 0 ; i--) {
-            state.discussions[obj.chatrooms.length-1-i]=(obj.chatrooms[i])
-            setDiscussionEmpty(true)
+          for (let i = 1 ; i < obj.chatrooms.length ; i++) {
+            state.discussions[i-1]=(obj.chatrooms[i])
+            setDiscussionNotEmpty(true)
           }
         }
-        methods.disConnect()
+        // methods.disConnect()
         router.push({
           name: value,
           params: {id: user}
         })
+        state.isPasswordOK = true
         setRightPassword(true)
     };
     ws.onerror = function (evt) {
-        console.log(evt);
+      console.log(evt);
     };
     ws.onclose = function (evt) {
       console.log(evt);
@@ -152,13 +161,19 @@ const methods = {
     }
   },
 
+  // refreshChatrommsList(String : pseudo)
+  // Rafraichissement de la liste des discussions, accessible uniquement si l'utilisateur est connecté correctement
+  refreshChatrooms(user) {
+    // TODO
+  },
+
   // connect(String : pseudo)
-  // Connection à la discussion selectionné (state.current_chatroom)
+  // Connexion à la discussion selectionnée (state.current_chatroom)
   // Dans le cas d'une nouvelle alerte, la description de l'alerte est non nulle, on envoie donc la description avec
   // NewAlerte()
   connect(user) {
 
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.password + "/" + state.current_chatroom
+    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
@@ -169,32 +184,37 @@ const methods = {
         }
     };
     ws.onmessage = function (evt) {
-        console.log(evt);
-        const obj = JSON.parse(evt.data)
-        if (obj.type=='message chat') {
-          var typeMessage = ''
-          if (obj.userId == user) {
-            // The message comes from the current user
-            typeMessage = "message-bubble left"
-          }
-          else {
-            typeMessage = "message-bubble right"
-          }
-          methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
+      console.log(evt);
+      console.log("[connect] Token is: " + state.token);
+      const obj = JSON.parse(evt.data)
+      if (obj.type=='message chat') {
+        var typeMessage = ''
+        if (obj.userId == user) {
+          // The message comes from the current user
+          typeMessage = "message-bubble left"
         }
-        if (obj.type=='Liste chatrooms') {
-          for (let i = 1 ; i < obj.chatrooms.length ; i++) {
-            state.discussions[i-1]=(obj.chatrooms[i])
-            setDiscussionEmpty(true)
-          }
+        else {
+          typeMessage = "message-bubble right"
         }
-        if (obj.type=='Notification') {
+        methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
+      }
+      if (obj.type=='Liste chatrooms') {
+        for (let i = 1 ; i < obj.chatrooms.length ; i++) {
+          state.discussions[i-1]=(obj.chatrooms[i])
+          setDiscussionNotEmpty(true)
+        }
+      }
+      if (obj.type=='Notification') {
+        if (!state.discussionsWithNotif.some(item => item.chatroomId === obj.chatroomId)) {
           // TODO : add notifications on concerned chatrooms
           methods.writeMessage("Info : new message in chatroom " + obj.chatroomId, "info-text");
+          state.discussionsWithNotif.push(chatroomId);
+          methods.refreshChatrooms(user);
         }
+      }
     };
     ws.onerror = function (evt) {
-        console.log(evt);
+      console.log(evt);
     };
     ws.onclose = function (evt) {
       console.log(evt);
@@ -203,14 +223,14 @@ const methods = {
   },
 
   // send()
-  // Créer un JSON pour envoyer le message avec comme contenu ce qui est écrit dans 'wsMessage'
+  // Crée un JSON pour envoyer le message avec comme contenu ce qui est écrit dans 'wsMessage'
   send() {
-    var message = {content : document.getElementById("wsMessage").value, created : new Date(), browser : navigator.product}
+    var message = {content : document.getElementById("wsMessage").value, created : new Date(), browser : navigator.product};
     ws.send(JSON.stringify(message));
   },
 
   // setChatroom(String : nom de la discussion)
-  // Modification de la discussion selectionnéé
+  // Modification de la discussion selectionnée
   setChatroom(pValue) {
     state.current_chatroom = pValue;
     setCurrentChatroomNotNull(true)
@@ -233,7 +253,7 @@ const methods = {
   // Rajoute la discussion à la liste des discussion de l'utilisateur
   addDiscussion(pValue) {
     state.discussions.push(pValue)
-    setDiscussionEmpty(true)
+    setDiscussionNotEmpty(true)
   },
 
   clearMessageEntry() {

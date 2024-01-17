@@ -97,3 +97,9 @@
 }
 
 /* === CONNECTION INTERFACE === */
+
+/* === CHATROOMS === */
+
+/* <span v-if="store.state.discussionsWithNotif.includes(item)" class="badge text-bg-primary"></span> */
+
+/* === CHATROOMS (END) === */

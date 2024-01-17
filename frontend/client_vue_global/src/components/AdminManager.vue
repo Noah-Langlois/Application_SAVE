@@ -7,7 +7,7 @@ const router = useRouter()
 const store = inject('STORE')
 
 function changeRoute(value) {
-  console.log(store.system.debug)
+  console.log("Debug status : " + store.system.debug)
   router.push({
     name: value
   })

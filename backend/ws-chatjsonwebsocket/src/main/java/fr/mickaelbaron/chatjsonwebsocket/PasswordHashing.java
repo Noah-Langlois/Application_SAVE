@@ -4,7 +4,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * hashing des mots de passe
- * 
  * @author teulierf
  * @see BE-SAVE
  */
