@@ -16,12 +16,12 @@ function changeRoute(value) {
 </script>
 
 <template>
-    <main>
+    <main style="min-height: 85vh;">
       <div>
-        <div class="mt-5">
+        <div class="ps-5 pt-5">
             <h1>Gestion des administrateurs</h1>
         </div>
-        <div class="row mt-5">
+        <div class="row p-5">
           <div class="col-xl-6 mb-3">
             <div class="card">
               <div class="card-body">
@@ -91,7 +91,7 @@ function changeRoute(value) {
           </div>
         </div>
         <div>
-            <button class="btn btn-primary" @click="changeRoute('HomeAdmin')">Retour</button>
+            <button class="btn btn-primary ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
         </div>
       </div>
     </main>

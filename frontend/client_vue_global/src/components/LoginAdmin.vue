@@ -16,10 +16,10 @@ function checkPassword(value) {
 
 </script>
 <template>
-    <main>
+    <main style="min-height: 85vh;">
         <div>
-            <div class="">
-                <div class="m-4">
+            <div>
+                <div class="p-4">
                     <h1>Login</h1>
                 </div>
                 <div class="m-4">

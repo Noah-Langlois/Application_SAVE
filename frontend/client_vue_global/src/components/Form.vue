@@ -30,8 +30,8 @@ function createAlerte(value,user) {
 </script>
 
 <template>
-    <main>
-        <h1 class="m-4">Nouvelle Alerte</h1>
+    <main style="min-height: 85vh;">
+        <h1 class="p-4">Nouvelle Alerte</h1>
             <div class="m-4">
                     <div>
                         <label class="form-label">Titre de la discussion</label>

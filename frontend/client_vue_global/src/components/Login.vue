@@ -16,7 +16,7 @@ store.methods.firstConnect(route.params.id)
 
 </script>
 <template>
-    <main>
+    <main style="min-height: 85vh;">
         <div>
             <div class="row" v-if="!store.state.firstConnection">
                 <div class="col-lg-5">

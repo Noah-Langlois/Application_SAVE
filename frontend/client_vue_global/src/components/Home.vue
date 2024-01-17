@@ -15,7 +15,7 @@ window.onresize = store.methods.setIsMobile
 </script>
 
 <template>
-  <main>
+  <main style="min-height: 85vh;">
     <!--Version WEB-->
     <div v-if="!store.state.isMobile">
       <div class="mb-5">
