@@ -6,11 +6,14 @@ import fb_sound from '../sounds/Facebook-message-sound.mp3'
 var ws;
 
 // Audio message
-var audio = new Audio(fb_sound)
+var audio = new Audio(fb_sound);
 
 const system = reactive({
   debug: false
 })
+
+// Chemin générique pour les requêtes au serveur websocket
+const wsURIprefix = "ws://192.168.196.107:8024/chatjsonwebsocket";
 
 // Propriétés réactives accessibles depuis les pages
 const state = reactive({
@@ -100,7 +103,7 @@ const methods = {
   // Permet de savoir si l'utilsateur est connu ou non
   // Se connecte au serveur qui lui renvoie un message contenant l'information, deconnexion NON-automatique
   firstConnect(user) {
-    const wsURIFirstConnection = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user
+    const wsURIFirstConnection = wsURIprefix + "/chat/" + state.userType + "/" + user
     ws = new WebSocket(wsURIFirstConnection);
     ws.onopen = function (evt) {
       console.log(evt);
@@ -124,7 +127,7 @@ const methods = {
   // Si le mot de passe est mauvais : le serveur n'envoie pas de messages et déconnecte l'utilisateur
   getChatrooms(user, password, value) {
 
-    const wsURIChatroomsAdmin = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + password
+    const wsURIChatroomsAdmin = wsURIprefix + "/chat/" + state.userType + "/" + user + "/" + password
     ws = new WebSocket(wsURIChatroomsAdmin);
     ws.onopen = function (evt) {
       console.log(evt);
@@ -173,7 +176,7 @@ const methods = {
   // NewAlerte()
   connect(user) {
 
-    const wsURI = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
+    const wsURI = wsURIprefix + "/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
@@ -269,6 +272,31 @@ const methods = {
       state.isMobile = false;
     }
   },
+
+  getAdminList(user) {
+    console.log("Debug status : " + system.debug)
+    var adminList = [];
+    const wsURIAdminListRequest = wsURIprefix + "/chat/requete/" + user + "/" + state.token;
+    ws = new WebSocket(wsURIAdminListRequest);
+    ws.onopen = function (evt) {
+      console.log(evt);
+      setWSConnected(true);
+    };
+    ws.onmessage = function (evt) {
+      console.log(evt);
+      const obj = JSON.parse(evt.data)
+      if (obj.type == 'Liste admins') {
+        for (let i = 1 ; i < obj.admins.length ; i++) {
+          adminList.push(obj.admins[i])
+        }
+      }
+    };
+    ws.onclose = function (evt) {
+      console.log(evt);
+      setWSConnected(false);
+    };
+    return adminList;
+  }
 }
 
 export default {

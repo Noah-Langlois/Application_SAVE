@@ -13,19 +13,28 @@ function changeRoute(value) {
   })
 }
 
-function createNewAdmin() {
+function createNewAdmin(user) {
   console.log("Debug status : " + store.system.debug)
   console.log("Creation d'un nouvel admin")
   var pseudoNewAdmin = document.getElementById("pseudoNewAdmin");
   console.log("[Creation admin] le token actuel est :" + store.state.token);
   const newAdminUsername = pseudoNewAdmin.value;
-  const wsURInewAdminRequest = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/SuperAdmin/" + store.state.token + "/Ajout/" + newAdminUsername + "/";
+  const wsURInewAdminRequest = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + user + "/" + store.state.token + "/Ajout/" + newAdminUsername ;
   var ws = new WebSocket(wsURInewAdminRequest);
   pseudoNewAdmin.value = "";
-  refreshAdminList();
+  displayAdminList(user);
 }
 
-function refreshAdminList() {
+function displayAdminList(user) {
+  console.log("Debug status : " + store.system.debug);
+  const adminList = store.methods.getAdminList(user);
+  const adminListElement = document.getElementById('admin-list');
+  adminListElement.innerHTML = '';
+  for (const admin of adminList) {
+    const listItem = document.createElement('li');
+    listItem.textContent = admin.userId;
+    adminListElement.appendChild(listItem);
+  }
 }
 
 function createAlerte(value,user) {
@@ -55,7 +64,7 @@ function createAlerte(value,user) {
               <div class="card-body">
                 <h5 class="card-title text-truncate">Administrateurs</h5>
                 <h6 class="card-subtitle mb-2 text-body-secondary">Liste des administrateurs de SAVE</h6>
-                <ul class="mt-5 text-truncate">
+                <ul class="mt-5 text-truncate" id="admin-list">
                   <li>SuperAdmin</li>
                 </ul>
               </div>
@@ -63,7 +72,7 @@ function createAlerte(value,user) {
           </div>
           <div class="col ms-2">
             <div class="row">
-              <!--Bouttons d'ajout et suppression d'admins qui activent un modal-->
+              <!--Boutons d'ajout et suppression d'admins qui activent un modal-->
               <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ajoutModal" style="max-width: 10rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
@@ -83,7 +92,7 @@ function createAlerte(value,user) {
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                      <button type="button" @click="createNewAdmin()" class="btn btn-primary">Valider</button>
+                      <button type="button" @click="createNewAdmin($route.params.id)" class="btn btn-primary">Valider</button>
                     </div>
                   </div>
                 </div>
