@@ -50,6 +50,12 @@ function createAlerte(value,user) {
   })
 }
 
+if (store.state.token=='') {
+    router.push({
+              name: 'Login'
+          })
+}
+
 </script>
 
 <template>
@@ -128,7 +134,7 @@ function createAlerte(value,user) {
           </div>
         </div>
         <div>
-            <button class="btn btn-primary ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
+            <button class="btn btn-outline-dark ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
         </div>
       </div>
     </main>

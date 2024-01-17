@@ -140,6 +140,10 @@ const methods = {
         if (obj.type == 'Token'){
           state.token = obj.content
           console.log("[getChatrooms] Token is: " + state.token)
+          router.push({
+            name: value,
+            params: {id: user}
+          })
         }
         if (obj.type=='Liste chatrooms') {
           for (let i = 1 ; i < obj.chatrooms.length ; i++) {
@@ -148,10 +152,6 @@ const methods = {
           }
         }
         // methods.disConnect()
-        router.push({
-          name: value,
-          params: {id: user}
-        })
         state.isPasswordOK = true
         setRightPassword(true)
     };
