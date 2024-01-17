@@ -39,7 +39,7 @@ function changeRoute(value) {
           <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty">
             <div class="col">
               <div id="select_chatroom" class="list-group" role="tablist">
-                <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action"
+                <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
                 data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
               </div>
             </div>
