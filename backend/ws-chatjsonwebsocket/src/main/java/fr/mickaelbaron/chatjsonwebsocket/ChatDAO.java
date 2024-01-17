@@ -37,7 +37,8 @@ public class ChatDAO {
   	//Map dernière connection utilisateur : Clé: username, valeur: date + heure connection
   	private static ConcurrentHashMap<String, Date> lastLoginTime = new ConcurrentHashMap<>();
 
-  	
+  	//Admins validés par SuperAdmin
+  	private static List<String> validAdmins = Collections.synchronizedList(new ArrayList<>());
   	
   	
 //////////////////////////////////GETERS & SETERS//////////////////////////////////////////////////////////
@@ -96,6 +97,15 @@ public class ChatDAO {
     public static ConcurrentHashMap<String, Date> getLastLoginTime() {
     	return lastLoginTime;
     }
+    
+    public static List<String> getValidAdmin() {
+    	return validAdmins;
+    }
+    
+    public static void setValidAdmin(String name) {
+    	validAdmins.add(name);
+    }
+    
 
     
 ///////////////////////////////////SUPER ADMIN //////////////////////////////////////////////////////////
@@ -113,15 +123,11 @@ public class ChatDAO {
     }
     
     
-    public static void addAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin, String newPassword) {
+    public static void addAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin) {
         // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
         if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
             
         	if (!existingAdmin.contains(newAdmin)) {
-        	// Définir le mot de passe pour le nouvel administrateur
-            String hashedPassword = PasswordHashing.hashPassword(newPassword);
-            saveHashedPassword(newAdmin.getUserId(), hashedPassword);
-
             // Ajouter le nouvel administrateur à la liste
             existingAdmin.add(newAdmin);
             

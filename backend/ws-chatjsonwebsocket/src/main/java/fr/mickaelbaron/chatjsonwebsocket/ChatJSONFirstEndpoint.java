@@ -25,6 +25,7 @@ public class ChatJSONFirstEndpoint {
 	public void onOpen(Session session, @PathParam("role") String role, @PathParam("username") String userName) throws IOException {
 		
 		ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
+		
 		if (utilisateurExistant != null) {
 		//Utilisateur existe
 			
@@ -45,10 +46,19 @@ public class ChatJSONFirstEndpoint {
 		//Utilisateur pas dans la liste donc nouveau
 			
 			if ("admin".equals(role)) {
+				if (ChatDAO.getValidAdmin().contains("username")) {
+					
+					ChatMessage infoMessage = new ChatMessage();
+					infoMessage.setType("Nouvel utilisateur");
+					broadcastListChatroom(infoMessage, session);
+					
+				} else {
 				System.out.println("Ajout d'admin uniquement par SuperAdmin");
                 session.close();
                 return;
+				}
 			}
+			
 			else {
 				ChatMessage infoMessage = new ChatMessage();
 				infoMessage.setType("Nouvel utilisateur");

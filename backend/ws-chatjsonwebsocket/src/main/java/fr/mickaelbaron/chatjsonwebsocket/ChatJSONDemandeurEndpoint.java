@@ -78,14 +78,14 @@ public class ChatJSONDemandeurEndpoint {
         }   
          else {
         	// L'utilisateur n'existe pas, créer un nouvel utilisateur
-
-       		
+      		
         	//Ajout nouvel utilisateur
             ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole("demandeur");
             ChatDAO.getExistingUsers().add(nouvelUtilisateur);
             
+            //Enregistrement du mdp
             String hashedPassword = PasswordHashing.hashPassword(password);
             ChatDAO.saveHashedPassword(userName, hashedPassword);
             System.out.println("Enregistrement du mot de passe");
@@ -101,7 +101,7 @@ public class ChatJSONDemandeurEndpoint {
             //Stocker la date de connection
             ChatDAO.updateLastLoginTime(userName);
             
-            //Envoie de la liste des chbroadcastTokenatrooms à la vue
+            //Envoie de la liste des chatrooms à la vue
             ChatMessage infoMessage = new ChatMessage();
             infoMessage.setType("Liste chatrooms");
             infoMessage.setChatrooms(nouvelUtilisateur.getChatrooms());

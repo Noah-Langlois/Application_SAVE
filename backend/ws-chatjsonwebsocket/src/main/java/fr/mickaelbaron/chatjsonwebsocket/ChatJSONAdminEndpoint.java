@@ -71,14 +71,48 @@ public class ChatJSONAdminEndpoint {
             
             //Stocker la date de connection
             ChatDAO.updateLastLoginTime(userName);
-        	}   
+        	   
             
-         else {
+       
+    } else if (ChatDAO.getValidAdmin().contains("userName")) {
+    	
+    	//Ajout nouvel utilisateur
+        ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
+        nouvelUtilisateur.setUserId(userName);
+        nouvelUtilisateur.setRole("admin");
+        ChatDAO.getExistingUsers().add(nouvelUtilisateur);
+        
+        //Enregistrement du mdp
+        String hashedPassword = PasswordHashing.hashPassword(password);
+        ChatDAO.saveHashedPassword(userName, hashedPassword);
+        System.out.println("Enregistrement du mot de passe");
+        System.out.println("Nouvel admin:" + nouvelUtilisateur.getRole() + ", " + nouvelUtilisateur.getUserId());
+        
+        //Generation du token
+        String token = JwtUtil.generateToken(userName, "admin");
+        ChatMessage tokenMessage = new ChatMessage();
+        tokenMessage.setType("Token");
+        tokenMessage.setContent(token);
+        broadcastToken(tokenMessage, session);
+        
+        //Stocker la date de connection
+        ChatDAO.updateLastLoginTime(userName);
+        
+      //Envoie de la liste des chatrooms à la VUE
+        ChatMessage infoMessage = new ChatMessage();
+        infoMessage.setType("Liste chatrooms");
+        infoMessage.setChatrooms(ChatDAO.getExistingChatrooms());
+        broadcastListChatroom(infoMessage, session);
+        
+    	} else {
+    		
+    		//Admin non autorisé
     		System.out.println("Admin pas dans la liste");
-            session.close();
-            return;
-        	}         
-    }
+    	       session.close();
+    	       return;
+    	}
+	
+   	}  
 	
     //Afficher la liste des chatroom
     private void broadcastListChatroom(ChatMessage message, Session session) {

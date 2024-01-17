@@ -14,16 +14,17 @@ import jakarta.websocket.server.ServerEndpoint;
  * @see BE-SAVE
  */
 
-@ServerEndpoint(value = "/chat/SuperAdmin/{token}/{AjoutouSuppr}/{username}/{password}",
+@ServerEndpoint(value = "/chat/SuperAdmin/{token}/{AjoutouSuppr}/{username}",
 				decoders = ChatMessageDecoder.class,
 				encoders = ChatMessageEncoder.class)
 
 public class ChatJSONSuperAdminEndpoint {
 			
 	@OnOpen
-    public void onOpen(Session session, @PathParam("token") String token, @PathParam("AjoutouSuppr") String Requete, @PathParam("username") String nameAdmin, @PathParam("password") String newPassword) throws IOException {
+    public void onOpen(Session session, @PathParam("token") String token, @PathParam("AjoutouSuppr") String Requete, @PathParam("username") String nameAdmin) throws IOException {
         System.out.println("ChatSuperAdminEndpoint.onOpen()");
         ChatUtilisateur SuperAdmin = getAdminParUserId("SuperAdmin");
+        System.out.println("ajout: " + Requete);
         
         if (!JwtUtil.validateToken(token)) {
             System.out.println("Token invalide");
@@ -39,7 +40,7 @@ public class ChatJSONSuperAdminEndpoint {
 	        ChatDAO.getExistingUsers().add(newAdmin);
 	        
 	        //Ajout à la base
-	        ChatDAO.addAdminWithPassword(SuperAdmin,newAdmin, newPassword);
+	        ChatDAO.addAdminWithPassword(SuperAdmin,newAdmin);
 	        System.out.println("Nouvel Admin Ajouté");
 	        
         } else if ("Suppr".equals(Requete)) {
