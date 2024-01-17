@@ -47,10 +47,10 @@ function sendAndClear() {
                             <div v-else class="connection-state-dot disconnected"></div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" >
                         <div class="col">
-                            <div class="form-group" style="background-color: white;">
-                                <div class="mytextarea" style="padding: 30px;" id="wsMessages"></div>
+                            <div class="form-group" style="background-color: white; border-radius: 1cap;">
+                                <div class="mytextarea" style="padding: 30px; border-radius: 1cap;" id="wsMessages"></div>
                             </div>
                         </div>
                     </div>
