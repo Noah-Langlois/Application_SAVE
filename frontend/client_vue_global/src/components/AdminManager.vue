@@ -83,21 +83,6 @@ if (store.state.token=='') {
 
 displayAdminList(myArray[2]);
 
-let URL = window.location.pathname
-const myArray = URL.split("/")
-if (store.state.token=='') {
-  if (myArray[1]=='demandeur') {
-    router.push({
-            name: 'Login'
-        })
-  }
-  if (myArray[1]=='admin') {
-    router.push({
-            name: 'LoginAdmin'
-        })
-  }
-}
-
 </script>
 
 <template>
