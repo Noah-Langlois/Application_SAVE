@@ -17,38 +17,71 @@ function createNewAdmin(user) {
   console.log("Debug status : " + store.system.debug)
   console.log("Creation d'un nouvel admin")
   var pseudoNewAdmin = document.getElementById("pseudoNewAdmin");
-  console.log("[Creation admin] le token actuel est :" + store.state.token);
-  const newAdminUsername = pseudoNewAdmin.value;
-  const wsURInewAdminRequest = "ws://192.168.196.107:8024/chatjsonwebsocket/chat/" + user + "/" + store.state.token + "/Ajout/" + newAdminUsername ;
+  const wsURInewAdminRequest = store.system.wsURIprefix + "/chat/" + user + "/" + store.state.token + "/Ajout/" + pseudoNewAdmin.value ;
   var ws = new WebSocket(wsURInewAdminRequest);
   pseudoNewAdmin.value = "";
   displayAdminList(user);
 }
 
-function displayAdminList(user) {
+function removeAdmin(user) {
+  console.log("Debug status : " + store.system.debug)
+  console.log("Suppression d'un admin")
+  var pseudoAdminToRemove = document.getElementById("pseudoAdminToRemove");
+  const wsURInewAdminRequest = store.system.wsURIprefix + "/chat/" + user + "/" + store.state.token + "/Suppr/" + pseudoAdminToRemove.value ;
+  var ws = new WebSocket(wsURInewAdminRequest);
+  pseudoAdminToRemove.value = "";
+  displayAdminList(user);
+}
+
+async function displayAdminList(user) {
   console.log("Debug status : " + store.system.debug);
-  const adminList = store.methods.getAdminList(user);
+  var v_adminList = ["SuperAdmin"];
+  const wsURIAdminListRequest = store.system.wsURIprefix + "/chat/" + user + "/" + store.state.token + "/List";
+  console.log("[getAdminList] URI is: " + wsURIAdminListRequest);
+  console.log("[getAdminList] Token is: " + store.state.token);
+  var ws;
+  ws = new WebSocket(wsURIAdminListRequest);
+  const message = await new Promise(resolve => {
+    ws.onmessage = function (evt) {
+      console.log(evt);
+      const obj = JSON.parse(evt.data)
+      if (obj.type == 'Liste admins') {
+        for (let i = 0; i < obj.adm.length; i++) {
+          console.log("[getAdminList] Admin found: " + obj.adm[i]);
+          v_adminList.push(obj.adm[i]);
+        }
+      }
+      resolve(evt.data);
+    };
+  });
+
   const adminListElement = document.getElementById('admin-list');
+  console.log("[displayAdminList] adminList is : " + v_adminList);
   adminListElement.innerHTML = '';
-  for (const admin of adminList) {
+  for (let i = 0; i < v_adminList.length; i++) {
     const listItem = document.createElement('li');
-    listItem.textContent = admin.userId;
+    listItem.textContent = v_adminList[i];
     adminListElement.appendChild(listItem);
+  }
+  console.log("[displayAdminList] adminListElement is : " + v_adminList);
+}
+
+let URL = window.location.pathname
+const myArray = URL.split("/")
+if (store.state.token=='') {
+  if (myArray[1]=='demandeur') {
+    router.push({
+            name: 'Login'
+        })
+  }
+  if (myArray[1]=='admin') {
+    router.push({
+            name: 'LoginAdmin'
+        })
   }
 }
 
-function createAlerte(value,user) {
-    store.methods.setChatroom(document.getElementById("discussion_title").value)
-    document.getElementById("discussion_title").value = ""
-    store.methods.setDescriptionNewAlerte(document.getElementById("description").value)
-    document.getElementById("description").value = ""
-    store.methods.addDiscussion(store.state.current_chatroom)
-    store.methods.connect(user)
-    console.log(store.system.debug)
-    router.push({
-        name: value
-  })
-}
+displayAdminList(myArray[2]);
 
 let URL = window.location.pathname
 const myArray = URL.split("/")
@@ -130,11 +163,11 @@ if (store.state.token=='') {
                     </div>
                     <div class="modal-body">
                       <h4>Pseudo :</h4>
-                      <input class="form-control"/>
+                      <input class="form-control" id="pseudoAdminToRemove"/>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                      <button type="button" class="btn btn-primary">Valider</button>
+                      <button type="button" @click="removeAdmin($route.params.id)" class="btn btn-primary">Valider</button>
                     </div>
                   </div>
                 </div>

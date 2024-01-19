@@ -12,9 +12,8 @@ function checkPassword(value) {
     store.methods.getChatrooms(user, document.getElementById("login_password").value, value)
     console.log(store.system.debug)
 }
-
-
 </script>
+
 <template>
     <main style="min-height: 85vh;">
         <div>
@@ -28,7 +27,8 @@ function checkPassword(value) {
                 </div>
                 <div class="mt-4">
                     <label>Mot de passe</label>
-                    <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
+                    <input type="password" class="form-control" id="login_password" style="max-width: 18rem;"
+                    v-on:keyup.enter="checkPassword('Home',$route.params.id)"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                 </div>
                 <div class="mt-4">
