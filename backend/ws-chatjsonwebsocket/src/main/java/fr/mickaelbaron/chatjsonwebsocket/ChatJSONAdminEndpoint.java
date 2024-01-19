@@ -34,9 +34,7 @@ public class ChatJSONAdminEndpoint {
         //Renvoie l'utilisateur s'il existe ou NULL sinon, grace au username
         ChatUtilisateur adminExistant = getAdminParUserId(userName);
 
-        
-        //Les différents cas:
-        
+
         // L'admin existe déjà
         if (adminExistant != null) {
         
@@ -74,13 +72,14 @@ public class ChatJSONAdminEndpoint {
         	   
             
        
-    } else if (ChatDAO.getValidAdmin().contains("userName")) {
+    } else if (ChatDAO.getValidAdmin().contains(userName)) {
     	
     	//Ajout nouvel utilisateur
         ChatUtilisateur nouvelUtilisateur = new ChatUtilisateur();
         nouvelUtilisateur.setUserId(userName);
         nouvelUtilisateur.setRole("admin");
         ChatDAO.getExistingUsers().add(nouvelUtilisateur);
+        ChatDAO.getAdmin().add(nouvelUtilisateur);
         
         //Enregistrement du mdp
         String hashedPassword = PasswordHashing.hashPassword(password);

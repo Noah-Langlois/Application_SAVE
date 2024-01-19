@@ -129,7 +129,9 @@ public class ChatDAO {
             
         	if (!existingAdmin.contains(newAdmin)) {
             // Ajouter le nouvel administrateur à la liste
-            existingAdmin.add(newAdmin);
+            //existingAdmin.add(newAdmin);
+            setValidAdmin(newAdmin.getUserId());
+            System.out.println(getValidAdmin());
             
         	} else {
                 throw new IllegalStateException("Admin deja dans la liste");
@@ -152,7 +154,25 @@ public class ChatDAO {
 
             // Suprimer le nouvel administrateur à la liste
             existingAdmin.remove(supprAdmin);
+            existingUsers.remove(supprAdmin);
+            validAdmins.remove(supprAdmin.getUserId());
             
+            } else {
+                throw new IllegalStateException("Admin pas dans la liste");
+
+            }
+        } else {
+            // L'utilisateur n'a pas les droits pour ajouter un administrateur
+            throw new IllegalStateException("Seul le SuperAdmin peut supprimer des administrateurs.");
+        }
+    }
+    
+    public static void removeValidAdminWithPassword(ChatUtilisateur superAdmin, String supprAdmin) {
+        // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+        if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
+            
+        	if (validAdmins.contains(supprAdmin)) {
+            	validAdmins.remove(supprAdmin);
             } else {
                 throw new IllegalStateException("Admin pas dans la liste");
 

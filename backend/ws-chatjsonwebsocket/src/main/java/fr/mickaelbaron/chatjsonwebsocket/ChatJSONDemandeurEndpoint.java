@@ -84,6 +84,7 @@ public class ChatJSONDemandeurEndpoint {
             nouvelUtilisateur.setUserId(userName);
             nouvelUtilisateur.setRole("demandeur");
             ChatDAO.getExistingUsers().add(nouvelUtilisateur);
+            ChatDAO.getDemandeur().add(nouvelUtilisateur);
             
             //Enregistrement du mdp
             String hashedPassword = PasswordHashing.hashPassword(password);

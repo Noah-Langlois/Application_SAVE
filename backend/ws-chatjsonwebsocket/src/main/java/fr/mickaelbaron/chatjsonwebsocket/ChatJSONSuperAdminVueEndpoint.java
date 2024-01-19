@@ -35,7 +35,7 @@ public class ChatJSONSuperAdminVueEndpoint {
         //Envoie de la liste des chatrooms à la VUE
         ChatMessage infoMessage = new ChatMessage();
         infoMessage.setType("Liste admins");
-        infoMessage.setAdm(ChatDAO.getAdmin());
+        infoMessage.setAdm(ChatDAO.getValidAdmin());
         broadcastListChatroom(infoMessage, session);
            
 	}
@@ -47,7 +47,5 @@ public class ChatJSONSuperAdminVueEndpoint {
         	System.out.println("Pb avec l'envoie liste chatroom");
             e.printStackTrace();
         }
-    }
-
-    
+    }  
 }

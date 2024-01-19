@@ -24,7 +24,7 @@ public class ChatJSONSuperAdminEndpoint {
     public void onOpen(Session session, @PathParam("token") String token, @PathParam("AjoutouSuppr") String Requete, @PathParam("username") String nameAdmin) throws IOException {
         System.out.println("ChatSuperAdminEndpoint.onOpen()");
         ChatUtilisateur SuperAdmin = getAdminParUserId("SuperAdmin");
-        System.out.println("ajout: " + Requete);
+        System.out.println("requete : " + Requete);
         
         if (!JwtUtil.validateToken(token)) {
             System.out.println("Token invalide");
@@ -37,18 +37,30 @@ public class ChatJSONSuperAdminEndpoint {
 	        ChatUtilisateur newAdmin = new ChatUtilisateur();
 	        newAdmin.setUserId(nameAdmin);
 	        newAdmin.setRole("admin");
-	        ChatDAO.getExistingUsers().add(newAdmin);
+	        //ChatDAO.getExistingUsers().add(newAdmin);
 	        
 	        //Ajout à la base
-	        ChatDAO.addAdminWithPassword(SuperAdmin,newAdmin);
+	        ChatDAO.addAdminWithPassword(SuperAdmin, newAdmin);
 	        System.out.println("Nouvel Admin Ajouté");
 	        
         } else if ("Suppr".equals(Requete)) {
         	
         	ChatUtilisateur adminSuppr = getAdminParUserId(nameAdmin);
-        	ChatDAO.removeAdminWithPassword(SuperAdmin, adminSuppr);
-        	System.out.println("Admin Supprimé");
+        	
+        	if (adminSuppr != null) {
+        		//Admin existant
+	        	ChatDAO.removeAdminWithPassword(SuperAdmin, adminSuppr);
+	        	System.out.println("Admin Supprimé");
+	        	
+        	} else if (ChatDAO.getValidAdmin().contains(nameAdmin)) {
+        		//Admin	jamais connecté
+        		ChatDAO.removeValidAdminWithPassword(SuperAdmin, nameAdmin);
+	        	System.out.println("Admin Supprimé");
+        	} else {
+        		throw new IllegalStateException("Admin inconnu!");
+        	}
         }
+        
         else {
         	throw new IllegalStateException("Requête inconnue!");
         }

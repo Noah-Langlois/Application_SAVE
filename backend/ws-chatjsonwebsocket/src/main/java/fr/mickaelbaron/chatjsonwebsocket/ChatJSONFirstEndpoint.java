@@ -42,17 +42,19 @@ public class ChatJSONFirstEndpoint {
                 return;
 			}
 		}
+		
 		else {
 		//Utilisateur pas dans la liste donc nouveau
 			
 			if ("admin".equals(role)) {
-				if (ChatDAO.getValidAdmin().contains("username")) {
+				if (ChatDAO.getValidAdmin().contains(userName)) {
 					
 					ChatMessage infoMessage = new ChatMessage();
 					infoMessage.setType("Nouvel utilisateur");
 					broadcastListChatroom(infoMessage, session);
 					
 				} else {
+				System.out.println(ChatDAO.getValidAdmin());	
 				System.out.println("Ajout d'admin uniquement par SuperAdmin");
                 session.close();
                 return;

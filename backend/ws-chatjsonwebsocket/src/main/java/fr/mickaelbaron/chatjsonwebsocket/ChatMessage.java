@@ -31,7 +31,7 @@ public class ChatMessage {
 	
 	private List<String> chatrooms;
 	
-	private List<ChatUtilisateur> admins;
+	private List<String> adminsValid;
 	
 	//Constructeur
 	public ChatMessage() {
@@ -110,13 +110,14 @@ public class ChatMessage {
         this.chatrooms = chatrooms;
     }
     
-    public List<ChatUtilisateur> getAdm() {
-        return admins;
+    public List<String> getAdm() {
+        return adminsValid;
     }
 
-    public void setAdm(List<ChatUtilisateur> admins) {
-        this.admins = admins;
+    public void setAdm(List<String> adm) {
+        this.adminsValid = adm;
     }
+    
 
 	//Redefinition de la methode toString
 	@Override
