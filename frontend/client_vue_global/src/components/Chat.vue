@@ -69,10 +69,7 @@ function sendAndClear() {
                                 </button>
                             </div>
                         </div>
-                        <div class="col">
-                        </div>
                     </div>
-
                 </div>
 
             </div>

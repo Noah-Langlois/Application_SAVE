@@ -35,7 +35,9 @@ function changeRoute(value) {
                 class="link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover"
                 :class="{ active: isActiveRoute('Home') }"
                 href="#"
-                v-if="isActiveRoute('Home')||isActiveRoute('AboutPage')"
+                v-if="isActiveRoute('Home')||isActiveRoute('AboutPage')
+                ||isActiveRoute('HomeAdmin')||
+                isActiveRoute('AdminManager')||isActiveRoute('Form')"
                 @click="changeRoute('Home')"
                 style=" color: rgb(0, 0, 0);"
                 >Home</a
@@ -46,7 +48,8 @@ function changeRoute(value) {
                 class="link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover"
                 :class="{ active: isActiveRoute('Home') }"
                 href="#"
-                v-if="isActiveRoute('Home')"
+                v-if="isActiveRoute('Home')||isActiveRoute('HomeAdmin')
+                ||isActiveRoute('AdminManager')||isActiveRoute('Form')"
                 @click="changeRoute('AboutPage')"
                 style=" color: rgb(0, 0, 0);"
                 >About</a
