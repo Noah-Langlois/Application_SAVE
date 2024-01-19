@@ -272,32 +272,6 @@ const methods = {
       state.isMobile = false;
     }
   },
-
-  getAdminList(user, pList) {
-    console.log("Debug status : " + system.debug);
-    const wsURIAdminListRequest = system.wsURIprefix + "/chat/SuperAdmin/" + state.token + "/List";
-    console.log("[getAdminList] URI is: " + wsURIAdminListRequest);
-    console.log("[getAdminList] Token is: " + state.token);
-    ws = new WebSocket(wsURIAdminListRequest);
-    ws.onopen = function (evt) {
-      console.log(evt);
-      setWSConnected(true);
-    };
-    ws.onmessage = function (evt) {
-      console.log(evt);
-      const obj = JSON.parse(evt.data)
-      if (obj.type == 'Liste admins') {
-        for (let i = 0; i < obj.adm.length; i++) {
-          console.log("[getAdminList] Admin found: " + obj.adm[i].userId);
-          pList.push(obj.adm[i].userId);
-        }
-      }
-    };
-    ws.onclose = function (evt) {
-      console.log(evt);
-      setWSConnected(false);
-    };
-  }
 }
 
 export default {
