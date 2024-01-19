@@ -32,19 +32,21 @@ if (store.state.token=='') {
 </script>
 
 <template>
-    <div class="row">
-        <div class="col">
-            <h1 class="pt-4 ps-4">About SAVE</h1>
+    <main style="min-height: 85vh;">
+        <div class="row" >
+            <div class="col">
+                <h1 class="pt-4 ps-4">About SAVE</h1>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <AboutUs/>
+        <div class="row">
+            <div class="col">
+                <AboutUs/>
+            </div>
         </div>
-    </div>
-    <div class="row justify-content-center pt-5">
-        <div class="col container text-center">
-            <button class="btn btn-outline-dark" @click="changeRoute('Home')">Menu</button>
+        <div class="row justify-content-center pt-5">
+            <div class="col container text-center">
+                <button class="btn btn-outline-dark" @click="changeRoute('Home')">Menu</button>
+            </div>
         </div>
-    </div>
+    </main>
 </template>
