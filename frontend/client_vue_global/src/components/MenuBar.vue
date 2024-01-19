@@ -30,15 +30,26 @@ function changeRoute(value) {
         <img src="../../img/baton.png" alt="logo" width="20" height="50" />
         <div id="navbarNav" class="collapse navbar-collapse ps-2">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
+            <li class="nav-item p-2">
               <a
-                class="nav-link"
+                class="link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover"
                 :class="{ active: isActiveRoute('Home') }"
                 href="#"
-                v-if="isActiveRoute('Home')"
+                v-if="isActiveRoute('Home')||isActiveRoute('AboutPage')"
                 @click="changeRoute('Home')"
                 style=" color: rgb(0, 0, 0);"
                 >Home</a
+              >
+            </li>
+            <li class="nav-item p-2">
+              <a
+                class="link-underline-dark link-underline-opacity-0 link-underline-opacity-100-hover"
+                :class="{ active: isActiveRoute('Home') }"
+                href="#"
+                v-if="isActiveRoute('Home')"
+                @click="changeRoute('AboutPage')"
+                style=" color: rgb(0, 0, 0);"
+                >About</a
               >
             </li>
           </ul>

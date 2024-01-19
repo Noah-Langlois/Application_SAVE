@@ -83,6 +83,21 @@ if (store.state.token=='') {
 
 displayAdminList(myArray[2]);
 
+let URL = window.location.pathname
+const myArray = URL.split("/")
+if (store.state.token=='') {
+  if (myArray[1]=='demandeur') {
+    router.push({
+            name: 'Login'
+        })
+  }
+  if (myArray[1]=='admin') {
+    router.push({
+            name: 'LoginAdmin'
+        })
+  }
+}
+
 </script>
 
 <template>
@@ -161,10 +176,7 @@ displayAdminList(myArray[2]);
           </div>
         </div>
         <div>
-            <button class="btn btn-primary ms-5" @click="displayAdminList($route.params.id)">Refresh</button>
-        </div>
-        <div>
-            <button class="btn btn-primary ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
+            <button class="btn btn-outline-dark ms-5" @click="changeRoute('HomeAdmin')">Retour</button>
         </div>
       </div>
     </main>

@@ -32,7 +32,7 @@ function checkPassword(value) {
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                 </div>
                 <div class="mt-4">
-                    <button class="btn btn-primary" @click="checkPassword('HomeAdmin')">Confirmer</button>
+                    <button class="btn btn-outline-dark" @click="checkPassword('HomeAdmin')">Confirmer</button>
                 </div>
             </div>
         </div>
