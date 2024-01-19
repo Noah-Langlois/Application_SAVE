@@ -26,6 +26,42 @@ function changeRoute(value) {
 
 }
 
+function refreshChatrooms(user) {
+  store.methods.updateChatroomsList(user)
+  displayChatrooms(user)
+}
+
+function displayChatrooms(user) {
+  const CurrentListChatrooms = document.getElementById('select_chatroom');
+  CurrentListChatrooms.innerHTML = '';
+  for (let i = 0; i < store.state.discussions.length; i++) {
+    const listItem = document.createElement('a');
+    listItem.textContent = store.state.discussions[i];
+    listItem.className = "list-group-item list-group-item-action list-group-item-light";
+    listItem.setAttribute("data-bs-toggle", "list");
+    listItem.setAttribute("role", "tab");
+    listItem.setAttribute("href", "#chat");
+    listItem.addEventListener("click", function () {
+      setChatroomList(store.state.discussions[i], user);
+    });
+    CurrentListChatrooms.appendChild(listItem);
+  }
+}
+
+new Vue({
+  el: '#app',
+  data: {
+    // your data properties
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.$refs.chatroomsDiv) {
+        refreshChatrooms();
+      }
+    });
+  },
+});
+
 </script>
 
 <template>
@@ -35,13 +71,13 @@ function changeRoute(value) {
               <h2>Discussions</h2>
             </div>
           </div>
-          <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty">
-            <div class="col">
+          <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty" ref="chatroomsDiv">
+            <!-- <div class="col">
               <div id="select_chatroom" class="list-group" role="tablist">
                 <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
                 data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="row justify-content-center pt-5" v-if="store.state.userType=='demandeur'">
             <div class="col container text-center">
@@ -50,7 +86,7 @@ function changeRoute(value) {
           </div>
           <div class="row justify-content-center mt-1" v-if="store.state.isDiscussionNotEmpty">
             <div class="col container text-center">
-              <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
+              <img src="../../img/refresh_arrow.png" @click="refreshChatrooms($route.params.id)" alt="refresh" width="20" height="20" />
             </div>
           </div>
           <div class="row justify-content-center">
