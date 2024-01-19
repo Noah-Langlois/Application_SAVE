@@ -22,7 +22,8 @@ store.methods.firstConnect(route.params.id)
                 <div class="col-lg-5">
                     <h1 class="mb-4 mt-4">Connexion</h1>
                     <label>Code PIN</label>
-                    <input type="text" class="form-control" id="login_password" style="max-width: 18rem;"/>
+                    <input type="password" class="form-control" id="login_password" style="max-width: 18rem;" 
+                    v-on:keyup.enter="checkPassword('Home',$route.params.id)"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                     <div class="mt-4">
                         <button class="btn btn-outline-dark" @click="checkPassword('Home',$route.params.id)">Confirmer</button>

@@ -28,7 +28,7 @@ function checkPassword(value) {
                 <div class="mt-4">
                     <label>Mot de passe</label>
                     <input type="password" class="form-control" id="login_password" style="max-width: 18rem;"
-                    v-on:keyup.enter="checkPassword('Home',$route.params.id)"/>
+                    v-on:keyup.enter="checkPassword('HomeAdmin')"/>
                     <p v-if="!store.state.rightPassword">Mot de passe incorrect</p>
                 </div>
                 <div class="mt-4">
