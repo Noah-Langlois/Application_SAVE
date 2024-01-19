@@ -94,8 +94,10 @@ const methods = {
   // clearMessages() : Supprime les messages affichés dans le div avec l'id wsMessages
   clearMessages() {
     var wsMessages = document.getElementById("wsMessages");
-    while (wsMessages.firstChild) {
-        wsMessages.removeChild(wsMessages.firstChild);
+    if (wsMessages != null) {
+      while (wsMessages.firstChild) {
+          wsMessages.removeChild(wsMessages.firstChild);
+      }
     }
   },
 
