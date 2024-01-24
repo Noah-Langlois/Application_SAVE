@@ -189,8 +189,10 @@ const methods = {
   // Dans le cas d'une nouvelle alerte, la description de l'alerte est non nulle, on envoie donc la description avec
   // NewAlerte()
   connect(user) {
-
+    
     const wsURI = system.wsURIprefix + "/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
+    
+    console.log("Trying to connect to " + wsURI + " ...")
 
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
@@ -222,12 +224,7 @@ const methods = {
         }
       }
       if (obj.type=='Notification') {
-        if (!state.discussionsWithNotif.some(item => item.chatroomId === obj.chatroomId)) {
-          // TODO : add notifications on concerned chatrooms
-          methods.writeMessage("Info : new message in chatroom " + obj.chatroomId, "info-text");
-          state.discussionsWithNotif.push(chatroomId);
-          methods.refreshChatrooms(user);
-        }
+          methods.updateChatroomsList(user);
       }
     };
     ws.onerror = function (evt) {

@@ -1,8 +1,9 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
 
 const store = inject('STORE')
 
@@ -27,12 +28,20 @@ function changeRoute(value) {
 }
 
 function refreshChatrooms(user) {
+  var temp_current_chatroom = store.state.current_chatroom
+  console.log("The current chatroom is " + temp_current_chatroom)
   store.methods.updateChatroomsList(user)
   displayChatrooms(user)
+  if (temp_current_chatroom != '') {
+    setChatroomList(temp_current_chatroom, route.params.id)
+  }
 }
 
 function displayChatrooms(user) {
   const CurrentListChatrooms = document.getElementById('select_chatroom');
+  if (CurrentListChatrooms == null) {
+    return
+  }
   CurrentListChatrooms.innerHTML = '';
   for (let i = 0; i < store.state.discussions.length; i++) {
     const listItem = document.createElement('a');
@@ -48,20 +57,6 @@ function displayChatrooms(user) {
   }
 }
 
-new Vue({
-  el: '#app',
-  data: {
-    // your data properties
-  },
-  mounted() {
-    this.$nextTick(() => {
-      if (this.$refs.chatroomsDiv) {
-        refreshChatrooms();
-      }
-    });
-  },
-});
-
 </script>
 
 <template>
@@ -72,12 +67,13 @@ new Vue({
             </div>
           </div>
           <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty" ref="chatroomsDiv">
-            <!-- <div class="col">
+            <div class="col">
               <div id="select_chatroom" class="list-group" role="tablist">
-                <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
+                <a
+                v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
                 data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
               </div>
-            </div> -->
+            </div>
           </div>
           <div class="row justify-content-center pt-5" v-if="store.state.userType=='demandeur'">
             <div class="col container text-center">
