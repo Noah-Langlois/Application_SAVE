@@ -1,8 +1,9 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
 
 const store = inject('STORE')
 
@@ -26,6 +27,36 @@ function changeRoute(value) {
 
 }
 
+function refreshChatrooms(user) {
+  var temp_current_chatroom = store.state.current_chatroom
+  console.log("The current chatroom is " + temp_current_chatroom)
+  store.methods.updateChatroomsList(user)
+  displayChatrooms(user)
+  if (temp_current_chatroom != '') {
+    setChatroomList(temp_current_chatroom, route.params.id)
+  }
+}
+
+function displayChatrooms(user) {
+  const CurrentListChatrooms = document.getElementById('select_chatroom');
+  if (CurrentListChatrooms == null) {
+    return
+  }
+  CurrentListChatrooms.innerHTML = '';
+  for (let i = 0; i < store.state.discussions.length; i++) {
+    const listItem = document.createElement('a');
+    listItem.textContent = store.state.discussions[i];
+    listItem.className = "list-group-item list-group-item-action list-group-item-light";
+    listItem.setAttribute("data-bs-toggle", "list");
+    listItem.setAttribute("role", "tab");
+    listItem.setAttribute("href", "#chat");
+    listItem.addEventListener("click", function () {
+      setChatroomList(store.state.discussions[i], user);
+    });
+    CurrentListChatrooms.appendChild(listItem);
+  }
+}
+
 </script>
 
 <template>
@@ -35,10 +66,11 @@ function changeRoute(value) {
               <h2>Discussions</h2>
             </div>
           </div>
-          <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty">
+          <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty" ref="chatroomsDiv">
             <div class="col">
               <div id="select_chatroom" class="list-group" role="tablist">
-                <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
+                <a
+                v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
                 data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
               </div>
             </div>
@@ -50,7 +82,7 @@ function changeRoute(value) {
           </div>
           <div class="row justify-content-center mt-1" v-if="store.state.isDiscussionNotEmpty">
             <div class="col container text-center">
-              <img src="../../img/refresh_arrow.png" alt="refresh" width="20" height="20" />
+              <img src="../../img/refresh_arrow.png" @click="refreshChatrooms($route.params.id)" alt="refresh" width="20" height="20" />
             </div>
           </div>
           <div class="row justify-content-center">

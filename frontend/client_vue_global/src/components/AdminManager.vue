@@ -37,8 +37,6 @@ async function displayAdminList(user) {
   console.log("Debug status : " + store.system.debug);
   var v_adminList = ["SuperAdmin"];
   const wsURIAdminListRequest = store.system.wsURIprefix + "/chat/" + user + "/" + store.state.token + "/List";
-  console.log("[getAdminList] URI is: " + wsURIAdminListRequest);
-  console.log("[getAdminList] Token is: " + store.state.token);
   var ws;
   ws = new WebSocket(wsURIAdminListRequest);
   const message = await new Promise(resolve => {
@@ -47,7 +45,6 @@ async function displayAdminList(user) {
       const obj = JSON.parse(evt.data)
       if (obj.type == 'Liste admins') {
         for (let i = 0; i < obj.adm.length; i++) {
-          console.log("[getAdminList] Admin found: " + obj.adm[i]);
           v_adminList.push(obj.adm[i]);
         }
       }
@@ -56,14 +53,12 @@ async function displayAdminList(user) {
   });
 
   const adminListElement = document.getElementById('admin-list');
-  console.log("[displayAdminList] adminList is : " + v_adminList);
   adminListElement.innerHTML = '';
   for (let i = 0; i < v_adminList.length; i++) {
     const listItem = document.createElement('li');
     listItem.textContent = v_adminList[i];
     adminListElement.appendChild(listItem);
   }
-  console.log("[displayAdminList] adminListElement is : " + v_adminList);
 }
 
 let URL = window.location.pathname

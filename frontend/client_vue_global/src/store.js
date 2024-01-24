@@ -173,10 +173,24 @@ const methods = {
     }
   },
 
-  // refreshChatrommsList(String : pseudo)
+  // getChatrommsList(String : pseudo)
   // Rafraichissement de la liste des discussions, accessible uniquement si l'utilisateur est connecté correctement
-  refreshChatrooms(user) {
-    // TODO
+  async updateChatroomsList(user) {
+    const wsURIRefreshChatrooms = system.wsURIprefix + "/chat/requete/" + user + "/" + state.token
+    ws = new WebSocket(wsURIRefreshChatrooms);
+    const message = await new Promise(resolve => {
+      ws.onmessage = function (evt) {
+        console.log(evt);
+        const obj = JSON.parse(evt.data)
+        if (obj.type == 'Liste chatrooms') {
+          for (let i = 0; i < obj.chatrooms.length; i++) {
+            state.discussions[i]=(obj.chatrooms[i])
+            setDiscussionNotEmpty(true)
+          }
+        }
+        resolve(evt.data);
+      };
+    });
   },
 
   // connect(String : pseudo)
@@ -184,7 +198,7 @@ const methods = {
   // Dans le cas d'une nouvelle alerte, la description de l'alerte est non nulle, on envoie donc la description avec
   // NewAlerte()
   connect(user) {
-
+    
     const wsURI = system.wsURIprefix + "/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
@@ -217,12 +231,7 @@ const methods = {
         }
       }
       if (obj.type=='Notification') {
-        if (!state.discussionsWithNotif.some(item => item.chatroomId === obj.chatroomId)) {
-          // TODO : add notifications on concerned chatrooms
-          methods.writeMessage("Info : new message in chatroom " + obj.chatroomId, "info-text");
-          state.discussionsWithNotif.push(chatroomId);
-          methods.refreshChatrooms(user);
-        }
+          methods.updateChatroomsList(user);
       }
     };
     ws.onerror = function (evt) {
@@ -289,7 +298,3 @@ export default {
   system,
   methods,
 }
-
-
-// jSonAdm_i = JSON.parse(obj.adm[i]);
-//          adminList.push(jSonAdm_i.userId);
