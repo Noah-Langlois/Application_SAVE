@@ -29,29 +29,31 @@ function changeRoute(value) {
 
 function refreshChatrooms(user) {
   var temp_current_chatroom = store.state.current_chatroom
+  var temp_discussions = store.state.discussions.slice()
   console.log("The current chatroom is " + temp_current_chatroom)
-  store.methods.updateChatroomsList(user)
-  displayChatrooms(user)
+  store.methods.updateChatroomsList(user) // This is an async function
+  var new_discussions = temp_discussions.filter(chatroom => !temp_discussions.includes(chatroom));
+  displayChatrooms(user, new_discussions)
   if (temp_current_chatroom != '') {
     setChatroomList(temp_current_chatroom, route.params.id)
   }
 }
 
-function displayChatrooms(user) {
+function displayChatrooms(user, pNewDiscussions) {
   const CurrentListChatrooms = document.getElementById('select_chatroom');
   if (CurrentListChatrooms == null) {
     return
   }
-  CurrentListChatrooms.innerHTML = '';
-  for (let i = 0; i < store.state.discussions.length; i++) {
+  // CurrentListChatrooms.innerHTML = '';
+  for (let i = 0; i < pNewDiscussions.length; i++) {
     const listItem = document.createElement('a');
-    listItem.textContent = store.state.discussions[i];
+    listItem.textContent = pNewDiscussions[i];
     listItem.className = "list-group-item list-group-item-action list-group-item-light";
     listItem.setAttribute("data-bs-toggle", "list");
     listItem.setAttribute("role", "tab");
     listItem.setAttribute("href", "#chat");
     listItem.addEventListener("click", function () {
-      setChatroomList(store.state.discussions[i], user);
+      setChatroomList(pNewDiscussions[i], user);
     });
     CurrentListChatrooms.appendChild(listItem);
   }
@@ -80,7 +82,7 @@ function displayChatrooms(user) {
               <button class="btn btn-outline-dark" @click="changeRoute('Form')">Nouvelle Alerte</button>
             </div>
           </div>
-          <div class="row justify-content-center mt-1" v-if="store.state.isDiscussionNotEmpty">
+          <div class="row justify-content-center mt-1">
             <div class="col container text-center">
               <img src="../../img/refresh_arrow.png" @click="refreshChatrooms($route.params.id)" alt="refresh" width="20" height="20" />
             </div>

@@ -177,8 +177,11 @@ const methods = {
   // Rafraichissement de la liste des discussions, accessible uniquement si l'utilisateur est connecté correctement
   async updateChatroomsList(user) {
     const wsURIRefreshChatrooms = system.wsURIprefix + "/chat/requete/" + user + "/" + state.token
-    ws = new WebSocket(wsURIRefreshChatrooms);
-    const message = await new Promise(resolve => {
+    const ws = new WebSocket(wsURIRefreshChatrooms);
+    await new Promise(resolve => {
+      ws.onopen = function (evt) {
+        console.log(evt);
+      };
       ws.onmessage = function (evt) {
         console.log(evt);
         const obj = JSON.parse(evt.data)
@@ -190,7 +193,13 @@ const methods = {
         }
         resolve(evt.data);
       };
+      ws.close = function (evt) {
+        console.log(evt);
+      }
     });
+    if (ws) {
+      ws.close();
+    }
   },
 
   // connect(String : pseudo)
