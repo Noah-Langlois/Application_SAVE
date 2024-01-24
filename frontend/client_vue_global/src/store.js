@@ -19,6 +19,8 @@ const system = reactive({
 const state = reactive({
   // Liste des discussions accessibles par l'utilisateur
   discussions: [],
+  // Liste des discussions avec des messages non lus
+  discussionsWithNotif: [],
   // Discussion selectionnée
   current_chatroom: '',
   // Stockage de la description d'une nouvelle alerte
@@ -202,6 +204,18 @@ const methods = {
     }
   },
 
+  // removeFromNotif(String : id de la discussion)
+  // Supprime la discussion de la liste des discussions avec des messages non lus
+  removeFromNotif(id) {
+    if (state.discussionsWithNotif.length >= 1) {
+      for (let i = 0 ; i < state.discussionsWithNotif.length ; i++) {
+        if (state.discussionsWithNotif[i] && state.discussionsWithNotif[i] == id) {
+          state.discussionsWithNotif.splice(i, 1)
+        }
+      }
+    }
+  },
+
   // connect(String : pseudo)
   // Connexion à la discussion selectionnée (state.current_chatroom)
   // Dans le cas d'une nouvelle alerte, la description de l'alerte est non nulle, on envoie donc la description avec
@@ -240,6 +254,9 @@ const methods = {
         }
       }
       if (obj.type=='Notification') {
+        if (state.current_chatroom != obj.chatroomId) {
+          state.discussionsWithNotif.push(obj.chatroomId)
+        }
           methods.updateChatroomsList(user);
       }
     };
