@@ -45,6 +45,8 @@ const state = reactive({
   token : '',
   // Un admin a-t-il déjà répondu sur cette discussion ?
   hasAdminAnswered : false,
+  // Y a-t-il des notifications à charger ?
+  needUpdate : false,
 })
 
 function setFirstConnection(pValue) {
@@ -254,10 +256,11 @@ const methods = {
         }
       }
       if (obj.type=='Notification') {
+        state.needUpdate = true;
         if (state.current_chatroom != obj.chatroomId) {
           state.discussionsWithNotif.push(obj.chatroomId)
         }
-          methods.updateChatroomsList(user);
+        methods.updateChatroomsList(user);
       }
     };
     ws.onerror = function (evt) {
@@ -317,6 +320,14 @@ const methods = {
       state.isMobile = false;
     }
   },
+
+  getNeedUpdate() {
+    return state.needUpdate;
+  },
+
+  setNeedUpdate(pValue) {
+    state.needUpdate = pValue;
+  }
 }
 
 export default {

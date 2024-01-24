@@ -63,8 +63,9 @@ function displayChatrooms(user, pNewDiscussions) {
 }
 
 function updateBadges(user) {
+  console.log("[updateBadges] Updating Notifications")
+  store.methods.setNeedUpdate(false)
   var temp_badges = store.state.discussionsWithNotif.slice()
-  console.log("[updateBages] The list of chatrooms with notifications is " + temp_badges)
   const CurrentListChatrooms = document.getElementById('select_chatroom')
   if (CurrentListChatrooms == null) {
     return
@@ -77,10 +78,8 @@ function updateBadges(user) {
       children[i].className = "list-group-item list-group-item-action list-group-item-light active";
     } else {      
       if (temp_badges.includes(children[i].textContent)) {
-        console.log("The chatroom " + children[i].textContent + " has a badge")
         children[i].className = "list-group-item list-group-item-action list-group-item-danger";
       } else {
-        console.log("The chatroom " + children[i].textContent + " has no badge")
         children[i].className = "list-group-item list-group-item-action list-group-item-light";
       }
     }
@@ -91,7 +90,9 @@ let intervalId;
 
 onMounted(() => {
   intervalId = setInterval(() => {
+    if (store.methods.getNeedUpdate()) {
     updateBadges(route.params.id);
+    }
   }, 5000); // Runs updateBadges every 5000 milliseconds (5 seconds)
 });
 
