@@ -5,27 +5,6 @@ import { inject } from 'vue'
 const router = useRouter()
 const store = inject('STORE')
 
-function changeRoute(value, user) {
-    if (store.state.isWSConnected) {
-        store.methods.disConnect()
-        store.methods.clearMessages()
-        console.log(store.system.debug)
-        router.push({
-            name: value
-        })
-    }
-    else {
-        store.methods.clearMessages()
-        console.log(store.system.debug)
-        router.push({
-            name: value
-    })
-    }
-    if (value=='Home') {
-        store.methods.getChatrooms(user)
-    }
-}
-
 function sendAndClear() {
     store.methods.send()
     store.methods.clearMessageEntry()
@@ -50,7 +29,8 @@ function sendAndClear() {
                     <div class="row" >
                         <div class="col">
                             <div class="form-group" style="background-color: white; border-radius: 1cap;">
-                                <div class="mytextarea" style="padding: 30px; border-radius: 1cap;" id="wsMessages"></div>
+                                <div class="mytextarea" style="padding: 30px; border-radius: 1cap;" id="wsMessages">
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -41,6 +41,8 @@ const state = reactive({
   isPasswordOK : false,
   // Token d'authentification, pour éviter de stocker le mot de passe en clair
   token : '',
+  // Un admin a-t-il déjà répondu sur cette discussion ?
+  hasAdminAnswered : false,
 })
 
 function setFirstConnection(pValue) {
@@ -63,6 +65,10 @@ function setDiscussionNotEmpty(pValue) {
   state.isDiscussionNotEmpty = pValue
 }
 
+function setHasAdminAnswered(pValue) {
+  state.hasAdminAnswered = pValue
+}
+
 // Méthodes publiques
 const methods = {
 
@@ -70,6 +76,7 @@ const methods = {
   NewAlerte() {
     var message = {content : state.DescriptionNewAlerte, created : new Date(), browser : navigator.product}
     ws.send(JSON.stringify(message));
+    methods.writeMessage("Votre demande va être traitée par un membre du CESA, veuillez patienter ou ajouter des informations", "message-bubble right")
     methods.setDescriptionNewAlerte('')
   },
 
@@ -179,7 +186,6 @@ const methods = {
   connect(user) {
 
     const wsURI = system.wsURIprefix + "/chat/" + state.userType + "/" + user + "/" + state.token + "/" + state.current_chatroom
-
     ws = new WebSocket(wsURI);
     ws.onopen = function (evt) {
         console.log(evt);
@@ -200,6 +206,7 @@ const methods = {
         }
         else {
           typeMessage = "message-bubble right"
+          setHasAdminAnswered(true)
         }
         methods.writeMessage(obj.role + " : " + obj.content, typeMessage);
       }
@@ -224,7 +231,8 @@ const methods = {
     ws.onclose = function (evt) {
       console.log(evt);
       setWSConnected(false);
-    }
+    };
+
   },
 
   // send()
