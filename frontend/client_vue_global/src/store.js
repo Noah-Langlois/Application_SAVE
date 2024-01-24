@@ -131,6 +131,13 @@ const methods = {
       if (obj.type == 'Utilisateur existant') {
         setFirstConnection(false)
       }
+      if (obj.type=='Notification') {
+        state.needUpdate = true;
+        if (state.current_chatroom != obj.chatroomId) {
+          state.discussionsWithNotif.push(obj.chatroomId)
+        }
+        methods.updateChatroomsList(user);
+      }
     };
   },
 
@@ -152,7 +159,6 @@ const methods = {
         const obj = JSON.parse(evt.data)
         if (obj.type == 'Token'){
           state.token = obj.content
-          console.log("[getChatrooms] Token is: " + state.token)
           router.push({
             name: value,
             params: {id: user}
@@ -163,6 +169,13 @@ const methods = {
             state.discussions[i]=(obj.chatrooms[i])
             setDiscussionNotEmpty(true)
           }
+        }
+        if (obj.type=='Notification') {
+          state.needUpdate = true;
+          if (state.current_chatroom != obj.chatroomId) {
+            state.discussionsWithNotif.push(obj.chatroomId)
+          }
+          methods.updateChatroomsList(user);
         }
         // methods.disConnect()
         state.isPasswordOK = true
@@ -235,7 +248,6 @@ const methods = {
     };
     ws.onmessage = function (evt) {
       console.log(evt);
-      console.log("[connect] Token is: " + state.token);
       const obj = JSON.parse(evt.data)
       if (obj.type=='message chat') {
         var typeMessage = ''
