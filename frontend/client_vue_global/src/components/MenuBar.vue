@@ -14,6 +14,7 @@ function isActiveRoute(value) {
 }
 
 function changeRoute(value) {
+  store.methods.setChatroom('')
   console.log(store.system.debug)
   router.push({
     name: value
