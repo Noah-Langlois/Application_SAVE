@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Modelise les messages info/chat envoyé à l'interface
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */
@@ -30,6 +30,8 @@ public class ChatMessage {
 	private String type;
 	
 	private List<String> chatrooms;
+	
+	private List<String> adminsValid;
 	
 	//Constructeur
 	public ChatMessage() {
@@ -107,6 +109,15 @@ public class ChatMessage {
     public void setChatrooms(List<String> chatrooms) {
         this.chatrooms = chatrooms;
     }
+    
+    public List<String> getAdm() {
+        return adminsValid;
+    }
+
+    public void setAdm(List<String> adm) {
+        this.adminsValid = adm;
+    }
+    
 
 	//Redefinition de la methode toString
 	@Override

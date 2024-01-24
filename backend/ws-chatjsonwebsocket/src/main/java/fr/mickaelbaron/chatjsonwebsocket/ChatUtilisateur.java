@@ -6,14 +6,15 @@ import java.util.List;
 /**
  * Modelise l'utilisateur de l'application
  * 
- * @author Florine
- * @version 1.0.0
+ * @author teulierf
+ * @version 2.0.0
  * @see BE-SAVE
  */
 public class ChatUtilisateur {
 	
 	//Attributs
 	private String userId;
+	private String name;
 	private String role;
 	private List<String> chatrooms;
 	
@@ -49,6 +50,14 @@ public class ChatUtilisateur {
 	
 	public void supprimerChatroom(String chatroom) {
 		chatrooms.remove(chatroom);
+	}
+	
+	public void setName(String n) {
+		this.name = n;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 

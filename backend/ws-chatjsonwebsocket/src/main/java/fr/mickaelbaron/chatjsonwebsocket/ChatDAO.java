@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Modelise la base de donnee
+ * Modélise une base de donnée fictive de l'application
  * 
- * @author Florine
- * @version 1.0.0
+ * @author teulierf
+ * @version 3.0.0
  * @see BE-SAVE
  */
 public class ChatDAO {
@@ -37,7 +37,8 @@ public class ChatDAO {
   	//Map dernière connection utilisateur : Clé: username, valeur: date + heure connection
   	private static ConcurrentHashMap<String, Date> lastLoginTime = new ConcurrentHashMap<>();
 
-  	
+  	//Admins validés par SuperAdmin
+  	private static List<String> validAdmins = Collections.synchronizedList(new ArrayList<>());
   	
   	
 //////////////////////////////////GETERS & SETERS//////////////////////////////////////////////////////////
@@ -55,6 +56,9 @@ public class ChatDAO {
     public static void saveHashedPassword(String username, String hashedPassword) {
         // Sauvegarder le mot de passe haché dans la "base de données"
         hashedPasswordsByUser.put(username, hashedPassword);
+    }
+    public static void deleteHashedPassword(String username) {
+    	hashedPasswordsByUser.remove(username);
     }
 
     public static String getHashedPasswordByUsername(String username) {
@@ -93,6 +97,15 @@ public class ChatDAO {
     public static ConcurrentHashMap<String, Date> getLastLoginTime() {
     	return lastLoginTime;
     }
+    
+    public static List<String> getValidAdmin() {
+    	return validAdmins;
+    }
+    
+    public static void setValidAdmin(String name) {
+    	validAdmins.add(name);
+    }
+    
 
     
 ///////////////////////////////////SUPER ADMIN //////////////////////////////////////////////////////////
@@ -109,19 +122,71 @@ public class ChatDAO {
         ChatDAO.saveHashedPassword(superAdmin.getUserId(), hashedPassword);
     }
     
-    
-    public static void addAdminWithPassword(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin, String newPassword) {
-        // Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+    //Ajout d'un utilisateur par le SuperAdmin
+    public static void addValidAdmin(ChatUtilisateur superAdmin, ChatUtilisateur newAdmin) {
+        
+    	// Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
         if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
-            // Définir le mot de passe pour le nouvel administrateur
-            String hashedPassword = PasswordHashing.hashPassword(newPassword);
-            ChatDAO.saveHashedPassword(newAdmin.getUserId(), hashedPassword);
-
+            
+        	if (!existingAdmin.contains(newAdmin)) {
             // Ajouter le nouvel administrateur à la liste
-            existingAdmin.add(newAdmin);
+            //existingAdmin.add(newAdmin);
+            setValidAdmin(newAdmin.getUserId());
+            System.out.println(getValidAdmin());
+            
+        	} else {
+                throw new IllegalStateException("Admin deja dans la liste");
+        	}
+        	
         } else {
             // L'utilisateur n'a pas les droits pour ajouter un administrateur
             throw new IllegalStateException("Seul le SuperAdmin peut ajouter des administrateurs.");
+        }
+    }
+    
+    //Supprimer un admin existant
+    public static void removeExistingAdmin(ChatUtilisateur superAdmin, ChatUtilisateur supprAdmin) {
+        
+    	// Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+        if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
+            
+        	if (existingAdmin.contains(supprAdmin)) {
+        		
+        	//Suppr mdp de la liste
+            deleteHashedPassword(supprAdmin.getUserId());
+
+            // Suprimer le nouvel administrateur des listes
+            existingAdmin.remove(supprAdmin);
+            existingUsers.remove(supprAdmin);
+            validAdmins.remove(supprAdmin.getUserId());
+            
+            } else {
+                throw new IllegalStateException("Admin inconnu");
+
+            }
+        } else {
+            // L'utilisateur n'a pas les droits pour ajouter un administrateur
+            throw new IllegalStateException("Seul le SuperAdmin peut supprimer des administrateurs.");
+        }
+    }
+    
+    //Supprimer un admin qui ne s'est jamais connecté
+    public static void removeValidAdmin(ChatUtilisateur superAdmin, String supprAdmin) {
+        
+    	// Vérifier si l'utilisateur qui veut ajouter un administrateur est bien le SuperAdmin
+        if ("SuperAdmin".equals(superAdmin.getUserId()) && "admin".equals(superAdmin.getRole())) {
+            
+        	if (validAdmins.contains(supprAdmin)) {
+            	validAdmins.remove(supprAdmin);
+            	
+            } else {
+                throw new IllegalStateException("Admin inconnu");
+            }
+        	
+        } else {
+        	
+            // L'utilisateur n'a pas les droits pour ajouter un admin
+            throw new IllegalStateException("Seul le SuperAdmin peut supprimer des adminis.");
         }
     }
 }

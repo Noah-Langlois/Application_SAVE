@@ -11,7 +11,7 @@ import jakarta.websocket.server.ServerEndpoint;
 /**
  * Notifie interface si utilisateur connu ou pas avant connection
  * 
- * @author Florine
+ * @author teulierf
  * @version 1.0.0
  * @see BE-SAVE
  */
@@ -24,7 +24,17 @@ public class ChatJSONFirstEndpoint {
 	@OnOpen
 	public void onOpen(Session session, @PathParam("role") String role, @PathParam("username") String userName) throws IOException {
 		
+		System.out.println("ChatEntreeEndpoint.onOpen()");
+
 		ChatUtilisateur utilisateurExistant = getUtilisateurParUserId(userName);
+		
+		//Verification des paramètres:
+	    if (userName == null || role == null) {
+	        System.out.println("Username ou role ne peut pas être null");
+	        session.close();
+	        return;
+	    }
+		
 		if (utilisateurExistant != null) {
 		//Utilisateur existe
 			
@@ -41,14 +51,25 @@ public class ChatJSONFirstEndpoint {
                 return;
 			}
 		}
+		
 		else {
 		//Utilisateur pas dans la liste donc nouveau
 			
 			if ("admin".equals(role)) {
+				if (ChatDAO.getValidAdmin().contains(userName)) {
+					
+					ChatMessage infoMessage = new ChatMessage();
+					infoMessage.setType("Nouvel utilisateur");
+					broadcastListChatroom(infoMessage, session);
+					
+				} else {
+				System.out.println(ChatDAO.getValidAdmin());	
 				System.out.println("Ajout d'admin uniquement par SuperAdmin");
                 session.close();
                 return;
+				}
 			}
+			
 			else {
 				ChatMessage infoMessage = new ChatMessage();
 				infoMessage.setType("Nouvel utilisateur");
