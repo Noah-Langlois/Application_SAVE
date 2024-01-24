@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-import { inject, ref } from 'vue'
+import { inject, onMounted , onUnmounted , ref } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -14,6 +14,11 @@ function setChatroomList(pvalue, user) {
     store.methods.clearMessages()
   }
   store.methods.connect(user)
+  // Remove the new chatroom from the list of discussions with notifications
+  store.methods.removeFromNotif(pvalue)
+  console.log("[setChatroomList] should remove " + pvalue + " from the list of chatrooms with notifications")
+  // Update the list of discussions with notifications
+  updateBadges(user)
 }
 
 function changeRoute(value) {
@@ -34,9 +39,7 @@ function refreshChatrooms(user) {
   store.methods.updateChatroomsList(user) // This is an async function
   var new_discussions = temp_discussions.filter(chatroom => !temp_discussions.includes(chatroom));
   displayChatrooms(user, new_discussions)
-  if (temp_current_chatroom != '') {
-    setChatroomList(temp_current_chatroom, route.params.id)
-  }
+  updateBadges(user)
 }
 
 function displayChatrooms(user, pNewDiscussions) {
@@ -59,6 +62,43 @@ function displayChatrooms(user, pNewDiscussions) {
   }
 }
 
+function updateBadges(user) {
+  var temp_badges = store.state.discussionsWithNotif.slice()
+  console.log("[updateBages] The list of chatrooms with notifications is " + temp_badges)
+  const CurrentListChatrooms = document.getElementById('select_chatroom')
+  if (CurrentListChatrooms == null) {
+    return
+  }
+  let children = CurrentListChatrooms.children;
+
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].textContent == store.state.current_chatroom) {
+      // Makes sure the current chatroom is not highlighted
+      children[i].className = "list-group-item list-group-item-action list-group-item-light active";
+    } else {      
+      if (temp_badges.includes(children[i].textContent)) {
+        console.log("The chatroom " + children[i].textContent + " has a badge")
+        children[i].className = "list-group-item list-group-item-action list-group-item-danger";
+      } else {
+        console.log("The chatroom " + children[i].textContent + " has no badge")
+        children[i].className = "list-group-item list-group-item-action list-group-item-light";
+      }
+    }
+  }
+}
+
+let intervalId;
+
+onMounted(() => {
+  intervalId = setInterval(() => {
+    updateBadges(route.params.id);
+  }, 5000); // Runs updateBadges every 5000 milliseconds (5 seconds)
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId); // Clears the interval when the component is unmounted
+});
+
 </script>
 
 <template>
@@ -71,8 +111,7 @@ function displayChatrooms(user, pNewDiscussions) {
           <div class="row justify-content-center mt-4" v-if="store.state.isDiscussionNotEmpty" ref="chatroomsDiv">
             <div class="col">
               <div id="select_chatroom" class="list-group" role="tablist">
-                <a
-                v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
+                <a v-for="item in store.state.discussions" class="list-group-item list-group-item-action list-group-item-light"
                 data-bs-toggle="list" role="tab" href="#chat" @click="setChatroomList({item}.item, $route.params.id)">{{item}}</a>
               </div>
             </div>
