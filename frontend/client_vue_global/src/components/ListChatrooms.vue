@@ -122,11 +122,13 @@ onUnmounted(() => {
               <button class="btn btn-outline-dark" @click="changeRoute('Form')">Nouvelle Alerte</button>
             </div>
           </div>
-          <div class="row justify-content-center mt-1">
-            <div class="col container text-center">
-              <img src="../../img/refresh_arrow.png" @click="refreshChatrooms($route.params.id)" alt="refresh" width="20" height="20" />
+          <!--
+            <div class="row justify-content-center mt-1">
+              <div class="col container text-center">
+                <img src="../../img/refresh_arrow.png" @click="refreshChatrooms($route.params.id)" alt="refresh" width="20" height="20" />
+              </div>
             </div>
-          </div>
+          -->
           <div class="row justify-content-center">
             <div class="col container text-center">
               <button class="btn btn-outline-danger mt-5" v-if="($route.params.id=='SuperAdmin') && (store.state.userType=='admin')" @click="changeRoute('AdminManager')">Gestionnaire d'autorisations</button>

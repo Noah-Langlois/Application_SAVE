@@ -52,7 +52,7 @@ if (store.state.token=='') {
                         <input type="text" class="form-control"
                         id="discussion_title" aria-describedby="title_help">
                         <div id="title_help" class="form-text">
-                            Exemple : Témoin d'une agresion / Victime d'une agression
+                            Exemple : Témoin d'une agression / Victime d'une agression
                         </div>
                     </div>
                     <div class="mt-5">
