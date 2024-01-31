@@ -11,7 +11,7 @@ var audio = new Audio(fb_sound);
 const system = reactive({
   debug: false,
   // Chemin générique pour les requêtes au serveur websocket
-  wsURIprefix: "ws://192.168.196.107:8024/chatjsonwebsocket"
+  wsURIprefix: "ws://localhost:8024/chatjsonwebsocket"
 })
 
 
