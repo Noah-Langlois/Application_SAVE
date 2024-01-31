@@ -22,8 +22,9 @@ function sendAndClear() {
                     <div class="row">
                         <div class="col">
                             <label>Messages</label>
+                            <!-- For development purpose only 
                             <div v-if="store.state.isWSConnected" class="connection-state-dot connected"></div>
-                            <div v-else class="connection-state-dot disconnected"></div>
+                            <div v-else class="connection-state-dot disconnected"></div>-->
                         </div>
                     </div>
                     <div class="row" >
