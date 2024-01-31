@@ -171,7 +171,7 @@ public class ChatJSONAdminEndpoint {
 	    		
 	    		for (ChatMessage message : messages) {
 	    			//System.out.println(message.getCreated());
-	    			if (message.getCreated().after(lastLogin)) {
+	    			if (message.getCreated().after(lastLogin) && message.getUserId()!= utilisateur.getUserId()) {
 	    				ChatMessage infoMessage = new ChatMessage();
 	    		        infoMessage.setType("Notification");
 	    		        infoMessage.setChatroomId(message.getChatroomId());
@@ -188,7 +188,7 @@ public class ChatJSONAdminEndpoint {
 	    		
 	    		for (ChatMessage message : messages) {
 	    			//System.out.println(message.getCreated());
-	    			if (message.getCreated().after(lastLogin)) {
+	    			if (message.getCreated().after(lastLogin) && message.getUserId()!= utilisateur.getUserId()) {
 	    				ChatMessage infoMessage = new ChatMessage();
 	    		        infoMessage.setType("Notification");
 	    		        infoMessage.setChatroomId(message.getChatroomId());
