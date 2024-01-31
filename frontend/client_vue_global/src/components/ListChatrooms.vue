@@ -93,7 +93,7 @@ onMounted(() => {
     if (store.methods.getNeedUpdate()) {
     updateBadges(route.params.id);
     }
-  }, 5000); // Runs updateBadges every 5000 milliseconds (5 seconds)
+  }, 1000); // Runs updateBadges every 1000 milliseconds (1 second)
 });
 
 onUnmounted(() => {
